@@ -1,7 +1,46 @@
-// sample code from http://www.glusoft.com/tuto/SFML-shader-example.php
-
 #include <SFML/Graphics.hpp>
 #include <iostream>
+
+/*
+ * UI Modes:
+ * 
+ * 1) generation screen
+ *    - show all chromosomes at once
+ *    - show selection
+ *     - reorder things
+ *     - kill off things
+ *    - ... and breeding
+ *     - fill up things
+ *    - show fitness for individuals?
+ *    - show stats for generation?
+ * 
+ * 2) fitness screen
+ *    - show original image
+ *    - show currently evaluated image
+ *    - allows for pausing/singlestepping
+ *    - show stats at the bottom
+ * 
+ * 3) fast-forward screen
+ *    - show original image
+ *    - show best of previous generation
+ *    - show stats at the bottom
+ * 
+ * logical states:
+ * 1) selection
+ * 2) crossover
+ * 3) mutation
+ * 
+ * program states:
+ * 1) evaluating
+ *    - when going slow: fitness screen
+ *    - when fast-forwarding: fast-forward screen
+ * 2) selecting
+ * 3) crossing over
+ * 4) mutating
+ * Step 2-4
+ *  - in generation screen
+ *  - invisible?
+ */
 
 int main() {
 	const float winW = 800;
@@ -43,7 +82,7 @@ int main() {
 		shader.setParameter("time", clk.getElapsedTime().asSeconds());
 		
 		sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-		shader.setParameter("mouse", sf::Vector2f(mousePos.x, mousePos.y - winH/2));
+		shader.setParameter("mouse", sf::Vector2f(mousePos.x, mousePos.y - winH));
 		
 		// Draw the sprite with the shader on it
 		window.clear();

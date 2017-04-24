@@ -45,6 +45,64 @@
  *  - invisible?
  */
 
+/*
+ * Project structure plan:
+ * - Chromosome
+ *  - static (class) size variables
+ *   - prevents situation where two differently-sized chromosomes mate
+ *  - can mate
+ *  - can mutate
+ *   - add circle
+ *   - remove circle
+ *   - change circle (stays at same layer)
+ *   - maybe change circle color, size, position separately, or all at once
+ *   - move circle (between layers)
+ *  - can be rendered to texture
+ * - Comparator (fitness tester) (maybe just function in Generations)
+ *  - can render progress/info to window (simple renderable)
+ *   - c.compare() sets variables in instance, draw directly after compare()-ing
+ *   - screen update logic in Generations
+ *  - initialized with size (or static size variables?)
+ *  - compares two textures
+ * - Generations
+ *  - keeps track of Chromosomes
+ *  - applies fitness function to Chromosomes
+ *  - applies selection to Chromosomes
+ *  - makes Chromosomes mate and mutate
+ *   - mutate only freshly mated chromosomes
+ *  - displays various states of genetic algorithm
+ * - Graph
+ *  - displays nice graph for use with Generations
+ * - Button?
+ */
+
+/*
+ * Generations states:
+ * - display generation stats (resting) (all other visual states optional)
+ * - run modes: step-by-step, visual, fast, off?
+ * - toggles for visibility of steps?
+ * - display evaluating fitness process
+ *  - step-through: both images, image diff, chromosome stats (fitness etc.), generation stats
+ *                  autorun mode
+ *  - fast: only generation stats, updated every half second or so
+ *  - off: nothing rendered at all
+ * - display selection process
+ *  - show all chromosomes, in tiny RenderTextures?
+ *  - show big version on hover-over, including original image?
+ *  - sort and move to respective position
+ *  - blend out deleted ones (set opacity to 0)
+ * - display mating process
+ *  - show parents
+ *  - show result
+ *  - show chromosomes? (string of circles maybe?)
+ *  - show parent fitness?
+ * 
+ * We've come full circle!
+ * 
+ * Further notes:
+ * - controls for stepping <-> runnning with delay
+ */
+
 int main() {
 	const float winW = 480;
 	const float winH = 480;

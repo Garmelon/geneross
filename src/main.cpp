@@ -14,6 +14,9 @@
  *    - show fitness for individuals?
  *    - show stats for generation?
  * 
+ * 1.5) mating screen
+ *      - 
+ * 
  * 2) fitness screen
  *    - show original image
  *    - show currently evaluated image
@@ -67,7 +70,19 @@ int main() {
 	
 	compshdr.setUniform("base", base);
 	compshdr.setUniform("curr", comp);
-	compshdr.setUniform("size", 240, 240);
+	compshdr.setUniform("size", sf::Vector2f(240, 240));
+	compshdr.setUniform("offs", sf::Vector2f(0, 0));
+	
+	sf::Shader medcompshdr;
+	medcompshdr.loadFromFile("compare_med.glsl", sf::Shader::Fragment);
+	if (!medcompshdr.isAvailable()) {
+		std::cout << "The medshader is not available\n";
+		return 1;
+	}
+	medcompshdr.setUniform("base", comp);
+	medcompshdr.setUniform("curr", base);
+	medcompshdr.setUniform("size", sf::Vector2f(240, 240));
+	medcompshdr.setUniform("offs", sf::Vector2f(240, 0));
 	
 	// Set the resolution parameter (the resoltion is divided to make the fire smaller)
 // 	shader.setParameter("resolution", sf::Vector2f(winW / 2, winH / 2));
@@ -92,7 +107,7 @@ int main() {
 // 		sf::Vector2i mousePos = sf::Mouse::getPosition(window);
 // 		shader.setParameter("mouse", sf::Vector2f(mousePos.x, mousePos.y - winH));
 		
-		// Draw the sprites, one with the shader on it
+		// Draw the sprites
 		window.clear();
 		
 		window.draw(sprbase);
@@ -102,6 +117,9 @@ int main() {
 		
 		sprcomp.setPosition(0, 240);
 		window.draw(sprcomp, &compshdr);
+		
+		sprcomp.setPosition(240, 240);
+		window.draw(sprcomp, &medcompshdr);
 		
 		window.display();
 	}

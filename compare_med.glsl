@@ -14,6 +14,7 @@ void main(void)
 	pos.y = 1.0 - pos.y;
 	vec4 color = texture2D(curr, pos);
 	vec4 basecolor = texture2D(base, pos);
-	color.xyz = abs(color.xyz - basecolor.xyz);
+	color.xyz = color.xyz - basecolor.xyz;
+	color.xyz = (vec3(1.0, 1.0, 1.0) + color.xyz)/2.0;
 	gl_FragColor = color;
 }

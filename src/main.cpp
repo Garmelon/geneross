@@ -1,5 +1,7 @@
-#include <SFML/Graphics.hpp>
 #include <iostream>
+#include <random>
+#include <SFML/Graphics.hpp>
+#include "Chromosome.hpp"
 
 /*
  * UI Modes:
@@ -106,10 +108,25 @@
 int main() {
 	const float winW = 480;
 	const float winH = 480;
+	std::mt19937_64 randomEngine;
+	randomEngine.seed(1);
 	
 	sf::RenderWindow window(sf::VideoMode(winW, winH), "gross");
 	window.setMouseCursorVisible(false); // hide the cursor
 	
+	Chromosome::size = sf::Vector2f(winW/2, winH/2);
+	Chromosome::re = &randomEngine;
+	Chromosome father, mother, child, monster;
+	sf::View vfather(sf::FloatRect(0, 0, winW/2, winH/2));
+	sf::View vmother(sf::FloatRect(0, 0, winW/2, winH/2));
+	sf::View vchild(sf::FloatRect(0, 0, winW/2, winH/2));
+	sf::View vmonster(sf::FloatRect(0, 0, winW/2, winH/2));
+	vfather.setViewport(sf::FloatRect(0, 0, .5, .5));
+	vmother.setViewport(sf::FloatRect(.5, 0, .5, .5));
+	vchild.setViewport(sf::FloatRect(0, .5, .5, .5));
+	vmonster.setViewport(sf::FloatRect(.5, .5, .5, .5));
+	
+	/*
 	// load images
 	sf::Texture base;
 	sf::Texture comp;
@@ -137,8 +154,8 @@ int main() {
 		std::cout << "The medshader is not available\n";
 		return 1;
 	}
-	medcompshdr.setUniform("base", comp);
-	medcompshdr.setUniform("curr", base);
+	medcompshdr.setUniform("base", base);
+	medcompshdr.setUniform("curr", comp);
 	medcompshdr.setUniform("size", sf::Vector2f(240, 240));
 	medcompshdr.setUniform("offs", sf::Vector2f(240, 0));
 	
@@ -148,6 +165,9 @@ int main() {
 	// Use a timer to obtain the time elapsed
 // 	sf::Clock clk;
 // 	clk.restart(); // start the timer
+	*/
+	
+	
 	
 	while (window.isOpen()) {
 		// Event handling
@@ -155,8 +175,17 @@ int main() {
 		
 		while (window.pollEvent(event)) {
 			// Exit the app when a key is pressed
-			if (event.type == sf::Event::KeyPressed)
-				window.close();
+			if (event.type == sf::Event::KeyPressed) {
+				father = Chromosome();
+				mother = Chromosome();
+				for (int i=0; i<100; ++i) {
+					father.mutate();
+					mother.mutate();
+				}
+				child = Chromosome(father, mother);
+				monster = child;
+				monster.mutate();
+			}
 		}
 		
 		// Set the others parameters who need to be updated every frames
@@ -167,7 +196,13 @@ int main() {
 		
 		// Draw the sprites
 		window.clear();
+		window.setView(vfather); window.draw(father);
+		window.setView(vmother); window.draw(mother);
+		window.setView(vchild); window.draw(child);
+		window.setView(vmonster); window.draw(monster);
+		window.display();
 		
+		/*
 		window.draw(sprbase);
 		
 		sprcomp.setPosition(240, 0);
@@ -178,63 +213,9 @@ int main() {
 		
 		sprcomp.setPosition(240, 240);
 		window.draw(sprcomp, &medcompshdr);
+		*/
 		
-		window.display();
 	}
 	
 	return 0;
 }
-
-// old main - keep for testing purposes
-/*
-int main() {
-	const float winW = 800;
-	const float winH = 600;
-	
-	sf::RenderWindow window(sf::VideoMode(winW, winH), "gross");
-	window.setMouseCursorVisible(false); // hide the cursor
-	
-	// Create a texture and a sprite for the shader
-	sf::Texture tex;
-	tex.create(winW, winH);
-	sf::Sprite spr(tex);
-	
-	sf::Shader shader;
-	shader.loadFromFile("fire.glsl", sf::Shader::Fragment); // load the shader
-	
-	if (!shader.isAvailable()) {
-		std::cout << "The shader is not available\n";
-	}
-	
-	// Set the resolution parameter (the resoltion is divided to make the fire smaller)
-	shader.setParameter("resolution", sf::Vector2f(winW / 2, winH / 2));
-	
-	// Use a timer to obtain the time elapsed
-	sf::Clock clk;
-	clk.restart(); // start the timer
-	
-	while (window.isOpen()) {
-		// Event handling
-		sf::Event event;
-		
-		while (window.pollEvent(event)) {
-			// Exit the app when a key is pressed
-			if (event.type == sf::Event::KeyPressed) 
-				window.close();
-		}
-		
-		// Set the others parameters who need to be updated every frames
-		shader.setParameter("time", clk.getElapsedTime().asSeconds());
-		
-		sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-		shader.setParameter("mouse", sf::Vector2f(mousePos.x, mousePos.y - winH));
-		
-		// Draw the sprite with the shader on it
-		window.clear();
-		window.draw(spr, &shader);
-		window.display();
-	}
-	
-	return 0;
-}
-*/

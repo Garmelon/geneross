@@ -177,14 +177,24 @@ int main() {
 			// Exit the app when a key is pressed
 			if (event.type == sf::Event::KeyPressed) {
 				father = Chromosome();
-				mother = Chromosome();
-				for (int i=0; i<100; ++i) {
+// 				mother = Chromosome();
+				for (int i=0; i<1000; ++i) {
 					father.mutate();
+// 					mother.mutate();
+				}
+				mother = father;
+				for (int i=0; i<20; ++i) {
 					mother.mutate();
 				}
 				child = Chromosome(father, mother);
 				monster = child;
 				monster.mutate();
+				
+				std::cout << "----------SIZES----------" << std::endl;
+				std::cout << "father size:  " << father.length() << std::endl;
+				std::cout << "mother size:  " << mother.length() << std::endl;
+				std::cout << "child size:   " << child.length() << std::endl;
+				std::cout << "monster size: " << monster.length() << std::endl;
 			}
 		}
 		

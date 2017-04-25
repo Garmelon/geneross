@@ -24,6 +24,8 @@ public:
 	
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	
+	size_t length();
+	
 protected:
 	struct Gene
 	{

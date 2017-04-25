@@ -109,17 +109,23 @@ void Chromosome::draw(sf::RenderTarget& target, sf::RenderStates states) const
 }
 
 
+size_t Chromosome::length()
+{
+	return this->genes.size();
+}
+
+
 Chromosome::Gene Chromosome::randomGene()
 {
-	float max_radius = std::min(Chromosome::size.x, Chromosome::size.y)/2;
-	std::uniform_real_distribution<> xdist(-max_radius, Chromosome::size.x + max_radius);
-	std::uniform_real_distribution<> ydist(-max_radius, Chromosome::size.y + max_radius);
+	float max_radius = std::min(Chromosome::size.x, Chromosome::size.y)/4;
+	std::uniform_real_distribution<> xdist(0, Chromosome::size.x);
+	std::uniform_real_distribution<> ydist(0, Chromosome::size.y);
 	std::uniform_real_distribution<> rdist(0, sqrt(max_radius));
 	std::uniform_int_distribution<> colordist(0, 255);
 	
 	sf::Vector2f position(xdist(*Chromosome::re), ydist(*Chromosome::re));
 	float radius = (pow(rdist(*Chromosome::re), 2));
-	sf::Color color(colordist(*Chromosome::re), colordist(*Chromosome::re), colordist(*Chromosome::re));
+	sf::Color color(colordist(*Chromosome::re), colordist(*Chromosome::re), colordist(*Chromosome::re), 50);
 	
 	Chromosome::Gene gene;
 	gene.position = position;
@@ -133,19 +139,19 @@ Chromosome::Gene Chromosome::randomGene()
 void Chromosome::mutateGene(Gene& gene)
 {
 	std::uniform_int_distribution<> booldist(0, 1);
-	float max_radius = std::min(Chromosome::size.x, Chromosome::size.y)/2;
+	float max_radius = std::min(Chromosome::size.x, Chromosome::size.y)/4;
 	
 	if (booldist(*Chromosome::re)) {  // position
 		std::normal_distribution<> posdist(0, Chromosome::stddev_position);
 		gene.position.x = std::clamp<float>(
 			gene.position.x + posdist(*Chromosome::re)*max_radius,
-			-max_radius,
-			Chromosome::size.x + max_radius
+			0,
+			Chromosome::size.x
 		);
 		gene.position.y = std::clamp<float>(
 			gene.position.y + posdist(*Chromosome::re)*max_radius,
-			-max_radius,
-			Chromosome::size.y + max_radius
+			0,
+			Chromosome::size.y
 		);
 	}
 	

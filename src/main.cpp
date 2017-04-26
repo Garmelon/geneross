@@ -2,6 +2,7 @@
 #include <random>
 #include <SFML/Graphics.hpp>
 #include "Chromosome.hpp"
+#include "Fitness.hpp"
 
 /*
  * UI Modes:
@@ -109,11 +110,12 @@ int main() {
 	const float winW = 480;
 	const float winH = 480;
 	std::mt19937_64 randomEngine;
-	randomEngine.seed(1);
+	randomEngine.seed(1337);
 	
 	sf::RenderWindow window(sf::VideoMode(winW, winH), "gross");
 	window.setMouseCursorVisible(false); // hide the cursor
 	
+	/* test mating
 	Chromosome::size = sf::Vector2f(winW/2, winH/2);
 	Chromosome::re = &randomEngine;
 	Chromosome father, mother, child, monster;
@@ -125,6 +127,37 @@ int main() {
 	vmother.setViewport(sf::FloatRect(.5, 0, .5, .5));
 	vchild.setViewport(sf::FloatRect(0, .5, .5, .5));
 	vmonster.setViewport(sf::FloatRect(.5, .5, .5, .5));
+	*/
+	
+	Chromosome::size = sf::Vector2f(winW/2, winH/2);
+	Chromosome::re = &randomEngine;
+	Chromosome target, chr;
+	
+	sf::View vtarget(sf::FloatRect(0, 0, winW/2, winH/2));
+	sf::View vchr(sf::FloatRect(0, 0, winW/2, winH/2));
+	sf::View vtex(sf::FloatRect(0, 0, winW/2, winH/2));
+	sf::View vcomp(sf::FloatRect(0, 0, winW/2, winH/2));
+	vtarget.setViewport(sf::FloatRect(0, 0, 0.5, 0.5));
+	vchr.setViewport(sf::FloatRect(0.5, 0, 0.5, 0.5));
+	vtex.setViewport(sf::FloatRect(0, 0.5, 0.5, 0.5));
+	vcomp.setViewport(sf::FloatRect(0.5, 0.5, 0.5, 0.5));
+	for (int i=0; i<1000; ++i) target.mutate();
+	
+	sf::RenderTexture targettex;
+	targettex.create(winW/2, winH/2);
+// 	targettex.clear(sf::Color::White);
+	targettex.clear();
+	targettex.draw(target);
+	targettex.display();
+	
+	Fitness fitn(targettex.getTexture(), 1);
+	if (!fitn.loadShader("compare.glsl")) {
+		std::cout << "Shader not loaded" << std::endl;
+		return 123;
+	}
+	sf::Sprite starget(fitn.target);
+	sf::Sprite stex(fitn.tex.getTexture());
+	sf::Sprite scomp(fitn.comp.getTexture());
 	
 	/*
 	// load images
@@ -176,6 +209,7 @@ int main() {
 		while (window.pollEvent(event)) {
 			// Exit the app when a key is pressed
 			if (event.type == sf::Event::KeyPressed) {
+				/* test mating
 				father = Chromosome();
 // 				mother = Chromosome();
 				for (int i=0; i<1000; ++i) {
@@ -195,6 +229,17 @@ int main() {
 				std::cout << "mother size:  " << mother.length() << std::endl;
 				std::cout << "child size:   " << child.length() << std::endl;
 				std::cout << "monster size: " << monster.length() << std::endl;
+				*/
+				
+				chr = target;
+// 				for (int i=0; i<20; ++i) {
+					chr.mutate();
+// 				}
+				
+				std::cout << "----------SIZES----------" << std::endl;
+				std::cout << "target size: " << target.length() << std::endl;
+				std::cout << "chr size:    " << chr.length() << std::endl;
+				std::cout << "fitness:     " << fitn.of(chr) << std::endl;
 			}
 		}
 		
@@ -204,13 +249,39 @@ int main() {
 // 		sf::Vector2i mousePos = sf::Mouse::getPosition(window);
 // 		shader.setParameter("mouse", sf::Vector2f(mousePos.x, mousePos.y - winH));
 		
-		// Draw the sprites
+		/* test mating
 		window.clear();
 		window.setView(vfather); window.draw(father);
 		window.setView(vmother); window.draw(mother);
 		window.setView(vchild); window.draw(child);
 		window.setView(vmonster); window.draw(monster);
 		window.display();
+		*/
+		
+// 		window.clear(sf::Color::White)
+		
+		window.clear();
+		window.setView(vtarget); window.draw(starget);
+		window.setView(vchr); window.draw(chr);
+		window.setView(vtex); window.draw(stex);
+		window.setView(vcomp); window.draw(scomp);
+		window.display();
+		
+		/* benchmark
+		sf::Clock clk;
+		clk.restart(); // start the timer
+		for (int h=0; h<10000; ++h) {
+			chr = target;
+// 			for (int i=0; i<20; ++i) {
+				chr.mutate();
+// 			}
+			
+			fitn.of(chr);
+// 			std::cout << fitn.of(chr) << "\n";
+		}
+		std::cout << "10000 images: " << clk.getElapsedTime().asSeconds() << std::endl;
+		return 2;
+		*/
 		
 		/*
 		window.draw(sprbase);

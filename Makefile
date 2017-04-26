@@ -8,7 +8,7 @@ SOURCEFILES = cpp
 SRCDIR = src
 TMPDIR = build
 TARGET = gross
-FILES = Chromosome main
+FILES = Chromosome Fitness main
 
 #SOURCES = $(patsubst %,$(SRCDIR)/%.cpp,$(FILES))
 OBJECTS = $(patsubst %,$(TMPDIR)/%.o,$(FILES))

@@ -34,6 +34,8 @@ protected:
 		sf::Color color;
 	};
 	
+	float maxRadius();
+	
 	Gene randomGene();
 	void mutateGene(Gene& gene);
 	

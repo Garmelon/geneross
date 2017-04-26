@@ -99,6 +99,11 @@ void Chromosome::mutate()
 
 void Chromosome::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	this->circle.setPosition(0, 0);
+	this->circle.setRadius(Chromosome::size.x + Chromosome::size.y);
+	this->circle.setOrigin(Chromosome::size);
+	this->circle.setFillColor(sf::Color::White);
+	target.draw(this->circle, states);
 	for (auto gene : this->genes) {
 		this->circle.setPosition(gene.position);
 		this->circle.setRadius(gene.radius);
@@ -115,9 +120,15 @@ size_t Chromosome::length()
 }
 
 
+float Chromosome::maxRadius()
+{
+	return std::min(Chromosome::size.x, Chromosome::size.y)/2;
+}
+
+
 Chromosome::Gene Chromosome::randomGene()
 {
-	float max_radius = std::min(Chromosome::size.x, Chromosome::size.y)/4;
+	float max_radius = this->maxRadius();
 	std::uniform_real_distribution<> xdist(0, Chromosome::size.x);
 	std::uniform_real_distribution<> ydist(0, Chromosome::size.y);
 	std::uniform_real_distribution<> rdist(0, sqrt(max_radius));
@@ -125,7 +136,12 @@ Chromosome::Gene Chromosome::randomGene()
 	
 	sf::Vector2f position(xdist(*Chromosome::re), ydist(*Chromosome::re));
 	float radius = (pow(rdist(*Chromosome::re), 2));
-	sf::Color color(colordist(*Chromosome::re), colordist(*Chromosome::re), colordist(*Chromosome::re), 50);
+	sf::Color color(
+		colordist(*Chromosome::re),
+		colordist(*Chromosome::re),
+		colordist(*Chromosome::re),
+		150
+	);
 	
 	Chromosome::Gene gene;
 	gene.position = position;
@@ -139,7 +155,7 @@ Chromosome::Gene Chromosome::randomGene()
 void Chromosome::mutateGene(Gene& gene)
 {
 	std::uniform_int_distribution<> booldist(0, 1);
-	float max_radius = std::min(Chromosome::size.x, Chromosome::size.y)/4;
+	float max_radius = this->maxRadius();
 	
 	if (booldist(*Chromosome::re)) {  // position
 		std::normal_distribution<> posdist(0, Chromosome::stddev_position);
@@ -158,7 +174,7 @@ void Chromosome::mutateGene(Gene& gene)
 	if (booldist(*Chromosome::re)) {  // radius
 		std::normal_distribution<> raddist(0, Chromosome::stddev_radius);
 		gene.radius = std::clamp<float>(
-			gene.radius + raddist(*Chromosome::re)*max_radius,
+			gene.radius + pow(raddist(*Chromosome::re)*sqrt(max_radius), 2),
 			0,
 			max_radius
 		);
@@ -169,6 +185,7 @@ void Chromosome::mutateGene(Gene& gene)
 		gene.color.r = std::clamp<unsigned int>(gene.color.r + coldist(*Chromosome::re), 0, 255);
 		gene.color.g = std::clamp<unsigned int>(gene.color.g + coldist(*Chromosome::re), 0, 255);
 		gene.color.b = std::clamp<unsigned int>(gene.color.b + coldist(*Chromosome::re), 0, 255);
+		gene.color.a = std::clamp<unsigned int>(gene.color.a + coldist(*Chromosome::re), 0, 255);
 	}
 }
 

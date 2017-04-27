@@ -4,9 +4,6 @@
 
 
 
-Fitness::Fitness() {}
-
-
 Fitness::Fitness(sf::Texture target, float scale)
 {
 	this->target = target;
@@ -36,7 +33,7 @@ bool Fitness::loadShader(std::string filename)
 }
 
 
-double Fitness::of(Chromosome chr)
+unsigned long long Fitness::of(Chromosome chr)
 {
 	// first, render a reduced, shaderized version to RenderTextures
 	this->tex.clear();
@@ -52,7 +49,7 @@ double Fitness::of(Chromosome chr)
 	// then, download the result as an image and add the pixels
 	sf::Image image = this->comp.getTexture().copyToImage();
 	sf::Vector2u size = image.getSize();
-	double fitness = 0;
+	unsigned long long fitness = 0;
 	for (unsigned int x=0; x<size.x; ++x) {
 		for (unsigned int y=0; y<size.y; ++y) {
 			sf::Color color = image.getPixel(x, y);

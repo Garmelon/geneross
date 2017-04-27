@@ -8,11 +8,10 @@
 class Fitness
 {
 public:
-	Fitness();
-	Fitness(sf::Texture target, float scale=0.5);
+	Fitness(sf::Texture target, float scale=1);
 	bool loadShader(std::string filename);
 	
-	double of(Chromosome chr);
+	unsigned long long of(Chromosome chr);
 	
 	sf::Texture target;      // base image to compare against
 	sf::RenderTexture tex;   // big RenderWindow containg the Chromosome to be evaluated

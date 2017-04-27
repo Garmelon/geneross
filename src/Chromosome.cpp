@@ -193,7 +193,7 @@ void Chromosome::mutateGene(Gene& gene)
 std::pair<std::vector<Chromosome::Gene>::iterator, std::vector<Chromosome::Gene>::iterator>
 Chromosome::selectSegment(std::vector<Chromosome::Gene>& genes)
 {
-	std::uniform_int_distribution<> randdist(0, genes.size());
+	std::uniform_int_distribution<> randdist(0, genes.size()-1);
 	auto first = genes.begin() + randdist(*Chromosome::re);
 	auto second = genes.begin() + randdist(*Chromosome::re);
 	
@@ -212,7 +212,7 @@ Chromosome::selectGene(std::vector<Chromosome::Gene>& genes)
 	if (genes.empty()) {
 		return genes.end();
 	} else {
-		std::uniform_int_distribution<> posdist(0, genes.size());
+		std::uniform_int_distribution<> posdist(0, genes.size()-1);
 		return genes.begin() + posdist(*Chromosome::re);
 	}
 }

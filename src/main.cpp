@@ -1,3 +1,4 @@
+#include <ctime>
 #include <iostream>
 #include <random>
 #include <SFML/Graphics.hpp>
@@ -110,7 +111,11 @@ int main() {
 	const float winW = 480;
 	const float winH = 480;
 	std::mt19937_64 randomEngine;
-	randomEngine.seed(1337);
+	randomEngine.seed(time(nullptr));
+// 	randomEngine.seed(1);
+	
+// 	std::uniform_int_distribution<> testdist(2, 7);
+// 	for (int i=0; i<100; ++i) std::cout << testdist(randomEngine) << std::endl;
 	
 	sf::RenderWindow window(sf::VideoMode(winW, winH), "gross");
 	window.setMouseCursorVisible(false); // hide the cursor
@@ -232,9 +237,9 @@ int main() {
 				*/
 				
 				chr = target;
-// 				for (int i=0; i<20; ++i) {
+				for (int i=0; i<10; ++i) {
 					chr.mutate();
-// 				}
+				}
 				
 				std::cout << "----------SIZES----------" << std::endl;
 				std::cout << "target size: " << target.length() << std::endl;

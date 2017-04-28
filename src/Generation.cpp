@@ -10,13 +10,13 @@ std::mt19937_64* Generation::re;
 
 Generation::Generation()
 {
-	this->individuals.reserve(Generation::size);
+	this->individuals.resize(Generation::size, {Chromosome(), 0, false, true});
 }
 
 
 void Generation::updateFitness()
 {
-	for (auto individual : this->individuals) {
+	for (auto& individual : this->individuals) {
 		if (!individual.fitnessEvaluated) {
 			individual.fitness = Generation::fitness->of(individual.chromosome);
 			individual.fitnessEvaluated = true;
@@ -59,14 +59,14 @@ void Generation::reproduce(float crossover)
 		}
 	);
 	
-	// reproduce according to parameters
+	// reproduce according to parameter(s)
 	std::uniform_int_distribution<> alivedist(0, Generation::living-1);
 	std::uniform_real_distribution<> crossoverdist(0, 1);
 	auto it = this->individuals.begin() + Generation::living;
 	for (; it!=this->individuals.end(); ++it) {
 		auto father = this->individuals.begin() + alivedist(*Generation::re);
 		
-		if (crossoverdist(*Generation::re) <= crossover) {
+		if (crossoverdist(*Generation::re) < crossover) {
 			auto mother = this->individuals.begin() + alivedist(*Generation::re);
 			it->chromosome = Chromosome(father->chromosome, mother->chromosome);
 		} else {
@@ -74,7 +74,7 @@ void Generation::reproduce(float crossover)
 		}
 		
 		it->alive = true;
-		it->fitness = 0;
+		it->fitness = 0;  // technically unnecessary, but who cares
 		it->fitnessEvaluated = false;
 		
 		it->chromosome.mutate();

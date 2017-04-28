@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "Chromosome.hpp"
 #include "Fitness.hpp"
+#include "Generation.hpp"
 
 /*
  * UI Modes:
@@ -107,18 +108,79 @@
  * - controls for stepping <-> runnning with delay
  */
 
-int main() {
+int main()
+{
 	const float winW = 480;
 	const float winH = 480;
 	std::mt19937_64 randomEngine;
 	randomEngine.seed(time(nullptr));
+	
+	sf::Texture target;
+	target.loadFromFile("tom-face.png");
+	
+	Chromosome::size = sf::Vector2f(target.getSize());
+	Chromosome::re = &randomEngine;
+	
+	Fitness fitn(target);
+	fitn.loadShader("compare.glsl");
+	
+	Generation::size = 500;
+	Generation::living = 150;
+	Generation::fitness = &fitn;
+	Generation::re = &randomEngine;
+	Generation genr;
+	unsigned int gencnt = 0;
+// 	genr.updateFitness();
+// 	for (auto it=genr.individuals.begin(); it!=genr.individuals.end(); ++it) {
+// 		std::cout << "alive: " << it->alive << " fitnev: " << it->fitnessEvaluated << " fitn: " << it->fitness << std::endl;
+// 	}
+	
+	// displaying stuff
+	sf::Sprite starget(target);
+	sf::View vbest(sf::FloatRect(0, 0, target.getSize().x, target.getSize().y));
+	vbest.setViewport(sf::FloatRect(.5, 0, .5, .5));
+	
+	sf::RenderWindow window(sf::VideoMode(winW, winH), "gross");
+	window.setMouseCursorVisible(false); // hide the cursor
+	
+	while (window.isOpen()) {
+		sf::Event event;
+		while (window.pollEvent(event));
+		
+		// calculate next generation
+		genr.updateFitness();
+		genr.cull();
+		genr.reproduce(0);
+// 		genr.updateFitness();
+// 		for (auto it=genr.individuals.rbegin(); it!=genr.individuals.rend(); ++it) {
+// 			if (it->fitnessEvaluated) {
+// 				std::cout << "alive: " << it->alive << " fitnev: " << it->fitnessEvaluated << " fitn: " << it->fitness << std::endl;
+// 			}
+// 		}
+		
+		// display results
+		window.clear();
+		window.draw(starget);
+		window.setView(vbest);
+		window.draw(genr.individuals[0].chromosome);
+		window.setView(window.getDefaultView());
+		window.display();
+		std::cout << "Generation finished: " << gencnt++ << " (winner's length: " << genr.individuals[0].chromosome.length() << ")" << std::endl;
+	}
+}
+
+// int main() {
+// 	const float winW = 480;
+// 	const float winH = 480;
+// 	std::mt19937_64 randomEngine;
+// 	randomEngine.seed(time(nullptr));
 // 	randomEngine.seed(1);
 	
 // 	std::uniform_int_distribution<> testdist(2, 7);
 // 	for (int i=0; i<100; ++i) std::cout << testdist(randomEngine) << std::endl;
 	
-	sf::RenderWindow window(sf::VideoMode(winW, winH), "gross");
-	window.setMouseCursorVisible(false); // hide the cursor
+// 	sf::RenderWindow window(sf::VideoMode(winW, winH), "gross");
+// 	window.setMouseCursorVisible(false); // hide the cursor
 	
 	/* test mating
 	Chromosome::size = sf::Vector2f(winW/2, winH/2);
@@ -134,6 +196,7 @@ int main() {
 	vmonster.setViewport(sf::FloatRect(.5, .5, .5, .5));
 	*/
 	
+	/*
 	Chromosome::size = sf::Vector2f(winW/2, winH/2);
 	Chromosome::re = &randomEngine;
 	Chromosome target, chr;
@@ -163,6 +226,7 @@ int main() {
 	sf::Sprite starget(fitn.target);
 	sf::Sprite stex(fitn.tex.getTexture());
 	sf::Sprite scomp(fitn.comp.getTexture());
+	*/
 	
 	/*
 	// load images
@@ -207,13 +271,13 @@ int main() {
 	
 	
 	
-	while (window.isOpen()) {
+// 	while (window.isOpen()) {
 		// Event handling
-		sf::Event event;
+// 		sf::Event event;
 		
-		while (window.pollEvent(event)) {
+// 		while (window.pollEvent(event)) {
 			// Exit the app when a key is pressed
-			if (event.type == sf::Event::KeyPressed) {
+// 			if (event.type == sf::Event::KeyPressed) {
 				/* test mating
 				father = Chromosome();
 // 				mother = Chromosome();
@@ -236,6 +300,7 @@ int main() {
 				std::cout << "monster size: " << monster.length() << std::endl;
 				*/
 				
+				/*
 				chr = target;
 				for (int i=0; i<10; ++i) {
 					chr.mutate();
@@ -245,8 +310,9 @@ int main() {
 				std::cout << "target size: " << target.length() << std::endl;
 				std::cout << "chr size:    " << chr.length() << std::endl;
 				std::cout << "fitness:     " << fitn.of(chr) << std::endl;
-			}
-		}
+				*/
+// 			}
+// 		}
 		
 		// Set the others parameters who need to be updated every frames
 // 		shader.setParameter("time", clk.getElapsedTime().asSeconds());
@@ -265,12 +331,14 @@ int main() {
 		
 // 		window.clear(sf::Color::White)
 		
+		/*
 		window.clear();
 		window.setView(vtarget); window.draw(starget);
 		window.setView(vchr); window.draw(chr);
 		window.setView(vtex); window.draw(stex);
 		window.setView(vcomp); window.draw(scomp);
 		window.display();
+		*/
 		
 		/* benchmark
 		sf::Clock clk;
@@ -301,7 +369,7 @@ int main() {
 		window.draw(sprcomp, &medcompshdr);
 		*/
 		
-	}
+// 	}
 	
-	return 0;
-}
+// 	return 0;
+// }

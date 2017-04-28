@@ -27,7 +27,7 @@ std::mt19937_64* Chromosome::re;
 Chromosome::Chromosome()
 {
 	// this->genes is already empty
-	this->circle.setPointCount(100);
+	this->circle.setPointCount(50);
 }
 
 
@@ -60,9 +60,9 @@ Chromosome::Chromosome(Chromosome& father, Chromosome& mother) :
 
 void Chromosome::mutate()
 {
-	std::uniform_int_distribution<> booldist(0, 1);
+	std::uniform_int_distribution<> mutatedist(0, 1);  // 1/2 of the time, it mutates everytime!
 	std::uniform_int_distribution<> choicedist(0, 12);
-	while (booldist(*Chromosome::re)) {
+	while (mutatedist(*Chromosome::re)) {
 		int choice = choicedist(*Chromosome::re);
 		
 		if (choice < 1) {  // add

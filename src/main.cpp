@@ -129,8 +129,8 @@ int main()
 	Generation::fitness = &fitn;
 	Generation::re = &randomEngine;
 	Generation genr;
-	unsigned int gencnt = 0;
-// 	genr.updateFitness();
+	unsigned int gencnt = 0; // all white is generation 0
+	genr.updateFitness();
 // 	for (auto it=genr.individuals.begin(); it!=genr.individuals.end(); ++it) {
 // 		std::cout << "alive: " << it->alive << " fitnev: " << it->fitnessEvaluated << " fitn: " << it->fitness << std::endl;
 // 	}
@@ -138,7 +138,11 @@ int main()
 	// displaying stuff
 	sf::Sprite starget(target);
 	sf::View vbest(sf::FloatRect(0, 0, target.getSize().x, target.getSize().y));
+	sf::View vmed(sf::FloatRect(0, 0, target.getSize().x, target.getSize().y));
+	sf::View vworst(sf::FloatRect(0, 0, target.getSize().x, target.getSize().y));
 	vbest.setViewport(sf::FloatRect(.5, 0, .5, .5));
+	vmed.setViewport(sf::FloatRect(0, .5, .5, .5));
+	vworst.setViewport(sf::FloatRect(.5, .5, .5, .5));
 	
 	sf::RenderWindow window(sf::VideoMode(winW, winH), "gross");
 	window.setMouseCursorVisible(false); // hide the cursor
@@ -148,9 +152,9 @@ int main()
 		while (window.pollEvent(event));
 		
 		// calculate next generation
-		genr.updateFitness();
 		genr.cull();
 		genr.reproduce(0);
+		genr.updateFitness();
 // 		genr.updateFitness();
 // 		for (auto it=genr.individuals.rbegin(); it!=genr.individuals.rend(); ++it) {
 // 			if (it->fitnessEvaluated) {
@@ -161,11 +165,12 @@ int main()
 		// display results
 		window.clear();
 		window.draw(starget);
-		window.setView(vbest);
-		window.draw(genr.individuals[0].chromosome);
+		window.setView(vbest ); window.draw(genr.individuals[0            ].chromosome);
+		window.setView(vmed  ); window.draw(genr.individuals[genr.living/2].chromosome);
+		window.setView(vworst); window.draw(genr.individuals[genr.living-1].chromosome);
 		window.setView(window.getDefaultView());
 		window.display();
-		std::cout << "Generation finished: " << gencnt++ << " (winner's length: " << genr.individuals[0].chromosome.length() << ")" << std::endl;
+		std::cout << "Generation finished: " << ++gencnt << " (winner's length: " << genr.individuals[0].chromosome.length() << ")" << std::endl;
 	}
 }
 

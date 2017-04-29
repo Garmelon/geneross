@@ -81,9 +81,9 @@ unsigned long long Fitness::of(Chromosome chr)
 		for (unsigned int y=0; y<size.y; ++y) {
 			sf::Color col = image.getPixel(0, y);
 // 			std::cout<<(int)col.r<<"|"<<(int)col.g<<"|"<<(int)col.b<<"|"<<(int)col.a<<std::endl;
-			fitness += ((unsigned int)col.r);                    // 2^(8*0)
-			fitness += ((unsigned int)col.g)*256;                // 2^(8*1)
-			fitness += ((unsigned int)col.b)*65536;              // 2^(8*2)
+			fitness += ((unsigned long int)col.r);                    // 2^(8*0)
+			fitness += ((unsigned long int)col.g)*256;                // 2^(8*1)
+			fitness += ((unsigned long int)col.b)*65536;              // 2^(8*2)
 // 			fitness += (unsigned int)col.a*16777216;           // 2^(8*3)
 // 			col = image.getPixel(1, y);
 // 			fitness += col.r*4294967296;         // 2^(8*4)
@@ -95,7 +95,7 @@ unsigned long long Fitness::of(Chromosome chr)
 		for (unsigned int x=0; x<size.x; ++x) {
 			sf::Color col = image.getPixel(x, 0);
 // 			std::cout<<(int)col.r<<"|"<<(int)col.g<<"|"<<(int)col.b<<"|"<<(int)col.a<<std::endl;
-			fitness +=  (unsigned long int)col.r;                    // 2^(8*0)
+			fitness +=  (unsigned long int)col.r;                     // 2^(8*0)
 			fitness += ((unsigned long int)col.g)*256;                // 2^(8*1)
 			fitness += ((unsigned long int)col.b)*65536;              // 2^(8*2)
 // 			fitness += ((unsigned long int)col.a)*16777216;           // 2^(8*3)

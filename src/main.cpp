@@ -119,7 +119,17 @@ int main()
 	target.loadFromFile("tom-face.png");
 	
 	Chromosome::size = sf::Vector2f(target.getSize());
+// 	Chromosome::size = sf::Vector2f(winW/2, winH/2);
 	Chromosome::re = &randomEngine;
+	
+// 	Chromosome targetc;
+// 	for (int i=0; i<100; ++i) targetc.mutate();
+// 	sf::RenderTexture targettex;
+// 	targettex.create(winW/2, winH/2);
+// 	targettex.clear();
+// 	targettex.draw(targetc);
+// 	targettex.display();
+// 	sf::Texture target = targettex.getTexture();
 	
 	Fitness fitn(target);
 	fitn.loadShader("compare.glsl");
@@ -131,6 +141,9 @@ int main()
 	Generation genr;
 	unsigned int gencnt = 0; // all white is generation 0
 	genr.updateFitness();
+// 	for (auto ind : genr.individuals) {
+// 		std::cout << ind.fitness << std::endl;
+// 	}
 // 	for (auto it=genr.individuals.begin(); it!=genr.individuals.end(); ++it) {
 // 		std::cout << "alive: " << it->alive << " fitnev: " << it->fitnessEvaluated << " fitn: " << it->fitness << std::endl;
 // 	}
@@ -139,22 +152,37 @@ int main()
 	sf::Sprite starget(target);
 	sf::View vbest(sf::FloatRect(0, 0, target.getSize().x, target.getSize().y));
 	sf::View vmed(sf::FloatRect(0, 0, target.getSize().x, target.getSize().y));
-	sf::View vworst(sf::FloatRect(0, 0, target.getSize().x, target.getSize().y));
+	sf::View vworst(sf::FloatRect(0, 0, 1/*target.getSize().x*/, target.getSize().y));
 	vbest.setViewport(sf::FloatRect(.5, 0, .5, .5));
 	vmed.setViewport(sf::FloatRect(0, .5, .5, .5));
 	vworst.setViewport(sf::FloatRect(.5, .5, .5, .5));
+	
+	sf::Sprite sprite(fitn.comp.getTexture());
 	
 	sf::RenderWindow window(sf::VideoMode(winW, winH), "gross");
 	window.setMouseCursorVisible(false); // hide the cursor
 	
 	while (window.isOpen()) {
 		sf::Event event;
-		while (window.pollEvent(event));
+		while (window.pollEvent(event)) {
+			if (event.type == sf::Event::KeyPressed) {
+// 				for (auto ind : genr.individuals) {
+// 					std::cout << ind.fitness << std::endl;
+// 				}
+				
+				std::cout << genr.individuals[0].fitness << std::endl;
+			
+			}
+		}
 		
 		// calculate next generation
 		genr.cull();
 		genr.reproduce(0);
 		genr.updateFitness();
+		
+// 		genr.cull();
+// 		genr.reproduce(0);
+// 		genr.updateFitness();
 // 		genr.updateFitness();
 // 		for (auto it=genr.individuals.rbegin(); it!=genr.individuals.rend(); ++it) {
 // 			if (it->fitnessEvaluated) {
@@ -167,9 +195,11 @@ int main()
 		window.draw(starget);
 		window.setView(vbest ); window.draw(genr.individuals[0            ].chromosome);
 		window.setView(vmed  ); window.draw(genr.individuals[genr.living/2].chromosome);
-		window.setView(vworst); window.draw(genr.individuals[genr.living-1].chromosome);
+		window.setView(vworst); //window.draw(genr.individuals[genr.living-1].chromosome);
+		window.draw(sprite);
 		window.setView(window.getDefaultView());
 		window.display();
+		
 		std::cout << "Generation finished: " << ++gencnt << " (winner's length: " << genr.individuals[0].chromosome.length() << ")" << std::endl;
 	}
 }

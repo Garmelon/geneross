@@ -2,7 +2,7 @@
 
 #include <SFML/System.hpp>
 
-
+#include <iostream>
 
 Fitness::Fitness(sf::Texture target, float scale) :
 	dummy(sf::TriangleFan, 4)
@@ -16,7 +16,9 @@ Fitness::Fitness(sf::Texture target, float scale) :
 // 	this->view.reset(sf::FloatRect(0, 0, targetSize.x, targetSize.y));
 // 	this->view.setViewport(sf::FloatRect(0, 0, 1, 1));
 	
-	this->horizontal = targetSize.x > targetSize.y;
+	this->horizontal = targetSize.x >= targetSize.y;
+// 	this->horizontal = true;
+	std::cout << "Horizontal mode: " << horizontal << " " << targetSize.x << "." << targetSize.y << std::endl;
 	if (this->horizontal) {
 		targetSize.x = 1;
 	} else {
@@ -40,7 +42,7 @@ bool Fitness::loadShader(std::string filename)
 	if (this->compshdr.isAvailable()) {
 		this->compshdr.setUniform("base", this->target);
 		this->compshdr.setUniform("curr", this->tex.getTexture());
-		this->compshdr.setUniform("size", sf::Vector2f(this->comp.getSize()));
+		this->compshdr.setUniform("size", sf::Vector2f(this->target.getSize()));
 		this->compshdr.setUniform("horizontal", this->horizontal);
 		return true;
 	} else {
@@ -66,6 +68,7 @@ unsigned long long Fitness::of(Chromosome chr)
 	// then, download the result as an image and add the pixels
 	sf::Image image = this->comp.getTexture().copyToImage();
 	sf::Vector2u size = image.getSize();
+// 	std::cout << "Image size: " << size.x << " " << size.y << std::endl;
 	unsigned long long fitness = 0;
 // 	for (unsigned int x=0; x<size.x; ++x) {
 // 		for (unsigned int y=0; y<size.y; ++y) {
@@ -77,10 +80,11 @@ unsigned long long Fitness::of(Chromosome chr)
 	if (this->horizontal) {
 		for (unsigned int y=0; y<size.y; ++y) {
 			sf::Color col = image.getPixel(0, y);
-			fitness += col.r;                    // 2^(8*0)
-			fitness += col.g*256;                // 2^(8*1)
-			fitness += col.b*65536;              // 2^(8*2)
-			fitness += col.a*16777216;           // 2^(8*3)
+// 			std::cout<<(int)col.r<<"|"<<(int)col.g<<"|"<<(int)col.b<<"|"<<(int)col.a<<std::endl;
+			fitness += ((unsigned int)col.r);                    // 2^(8*0)
+			fitness += ((unsigned int)col.g)*256;                // 2^(8*1)
+			fitness += ((unsigned int)col.b)*65536;              // 2^(8*2)
+// 			fitness += (unsigned int)col.a*16777216;           // 2^(8*3)
 // 			col = image.getPixel(1, y);
 // 			fitness += col.r*4294967296;         // 2^(8*4)
 // 			fitness += col.g*1099511627776;      // 2^(8*5)
@@ -90,10 +94,11 @@ unsigned long long Fitness::of(Chromosome chr)
 	} else {
 		for (unsigned int x=0; x<size.x; ++x) {
 			sf::Color col = image.getPixel(x, 0);
-			fitness += col.r;                    // 2^(8*0)
-			fitness += col.g*256;                // 2^(8*1)
-			fitness += col.b*65536;              // 2^(8*2)
-			fitness += col.a*16777216;           // 2^(8*3)
+// 			std::cout<<(int)col.r<<"|"<<(int)col.g<<"|"<<(int)col.b<<"|"<<(int)col.a<<std::endl;
+			fitness +=  (unsigned long int)col.r;                    // 2^(8*0)
+			fitness += ((unsigned long int)col.g)*256;                // 2^(8*1)
+			fitness += ((unsigned long int)col.b)*65536;              // 2^(8*2)
+// 			fitness += ((unsigned long int)col.a)*16777216;           // 2^(8*3)
 // 			col = image.getPixel(x, 1);
 // 			fitness += col.r*4294967296;         // 2^(8*4)
 // 			fitness += col.g*1099511627776;      // 2^(8*5)

@@ -16,16 +16,16 @@ void main(void)
 	
 	if (horizontal) {
 		float posy = gl_FragCoord.y/size.y;
-		for (float x=0.0; x<size.x; x+=1.0) {
-			vec4 color     = texture2D(curr, vec2(x,   posy));
+		for (float x=0.0; x<=1.0; x+=(1.0/size.x)) {
+			vec4 color     = texture2D(curr, vec2(x,     posy));
 			vec4 basecolor = texture2D(base, vec2(x, 1.0-posy));
 			color.rgb = abs(color.rgb - basecolor.rgb);
 			total = total + color.r + color.g + color.b;
 		}
 	} else {
 		float posx = gl_FragCoord.x/size.x;
-		for (float y=0.0; y<size.y; y+=1.0) {
-			vec4 color     = texture2D(curr, vec2(posx,   y));
+		for (float y=0.0; y<=1.0; y+=(1.0/size.y)) {
+			vec4 color     = texture2D(curr, vec2(posx,     y));
 			vec4 basecolor = texture2D(base, vec2(posx, 1.0-y));
 			color.rgb = abs(color.rgb - basecolor.rgb);
 			total = total + color.r + color.g + color.b;
@@ -33,13 +33,29 @@ void main(void)
 	}
 	
 	// encode to rgba channels in current pixel
-	vec4 color;
-	color.r = mod(total, 256.0/255.0); total = (total - color.r) / (256.0/255.0);
-	color.g = mod(total, 256.0/255.0); total = (total - color.g) / (256.0/255.0);
-	color.b = mod(total, 256.0/255.0); total = (total - color.b) / (256.0/255.0);
-	color.a = mod(total, 256.0/255.0);
+	vec4 col = vec4(0.0, 0.0, 0.0, 1.0);
+// 	total = total/200.0;
+	col.r = mod(total,         256.0/255.0);
+	col.g = mod(total/256.0,   256.0/255.0);
+	col.b = mod(total/65536.0, 256.0/255.0);
+// 	color.g = 0.0;
+// 	color.b = 0.0;
+// 	color.g = mod(total, 256.0/255.0);
+// 	color.r = float(mod(total, 256))/255.0;
+// 	total = total/256;
+// 	color.r = 1.0/255.0;
+// 	color.r = mod(total, 256.0/255.0);
+// 	total = (total - color.r) / (256.0/255.0);
+// 	color.g = mod(total, 256.0/255.0); total = (total - color.g) / (256.0/255.0);
+// 	color.b = mod(total, 256.0/255.0);
+// 	color.a = 1.0;
 	
-	gl_FragColor = color;
+// 	color.r = 0;
+	
+	gl_FragColor = col;
+// 	color.a = mod(total, 256.0/255.0);
+	
+// 	gl_FragColor = vec4(0.0, 1.0, 1.0, 1.0);
 }
 
 /*

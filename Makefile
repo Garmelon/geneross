@@ -1,5 +1,6 @@
 CC = g++ -std=c++17
-CFLAGS = -g -O0 -Wall --pedantic
+# CFLAGS = -g -O0 -Wall --pedantic
+CFLAGS = -O2 -Wall --pedantic
 LFLAGS = -lsfml-system -lsfml-network -lsfml-window -lsfml-graphics
 
 RM = rm -f

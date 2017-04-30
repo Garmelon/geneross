@@ -36,8 +36,8 @@ Chromosome::Chromosome(Chromosome& father, Chromosome& mother) :
 {
 	std::uniform_int_distribution<> booldist(0, 1);
 	
-	auto fpair = this->selectSegment(father.genes);
-	auto mpair = this->selectSegment(mother.genes);
+// 	auto fpair = this->selectSegment(father.genes);
+// 	auto mpair = this->selectSegment(mother.genes);
 	
 // 	auto cur_it = this->genes.begin();
 // 	std::cout << std::distance(cur_it, father.genes.begin()) << std::endl;
@@ -46,14 +46,25 @@ Chromosome::Chromosome(Chromosome& father, Chromosome& mother) :
 // 	cur_it = this->genes.insert(cur_it, mpair.first, mpair.second);
 // 	cur_it = this->genes.insert(cur_it, father.genes.begin(), fpair.first);
 	
+// 	if (booldist(*Chromosome::re)) {
+// 		this->genes.insert(this->genes.begin(), fpair.second, father.genes.end());
+// 		this->genes.insert(this->genes.begin(), mpair.first, mpair.second);
+// 		this->genes.insert(this->genes.begin(), father.genes.begin(), fpair.first);
+// 	} else {
+// 		this->genes.insert(this->genes.begin(), mpair.second, mother.genes.end());
+// 		this->genes.insert(this->genes.begin(), fpair.first, fpair.second);
+// 		this->genes.insert(this->genes.begin(), mother.genes.begin(), mpair.first);
+// 	}
+	
+	auto gene_father = this->selectGene(father.genes);
+	auto gene_mother = this->selectGene(mother.genes);
+	
 	if (booldist(*Chromosome::re)) {
-		this->genes.insert(this->genes.begin(), fpair.second, father.genes.end());
-		this->genes.insert(this->genes.begin(), mpair.first, mpair.second);
-		this->genes.insert(this->genes.begin(), father.genes.begin(), fpair.first);
+		this->genes.insert(this->genes.begin(), father.genes.begin(), gene_father);
+		this->genes.insert(this->genes.begin(), gene_mother, mother.genes.end());
 	} else {
-		this->genes.insert(this->genes.begin(), mpair.second, mother.genes.end());
-		this->genes.insert(this->genes.begin(), fpair.first, fpair.second);
-		this->genes.insert(this->genes.begin(), mother.genes.begin(), mpair.first);
+		this->genes.insert(this->genes.begin(), mother.genes.begin(), gene_mother);
+		this->genes.insert(this->genes.begin(), gene_father, father.genes.end());
 	}
 }
 

@@ -112,7 +112,7 @@ int main()
 {
 	const float winW = 480;
 	const float winH = 480;
-	std::mt19937_64 randomEngine;
+	std::minstd_rand randomEngine;
 	randomEngine.seed(time(nullptr));
 	
 	sf::Texture target;

@@ -13,7 +13,7 @@ public:
 	static size_t size;
 	static size_t living;
 	static Fitness* fitness;
-	static std::mt19937_64* re;
+	static std::minstd_rand* re;
 	
 	Generation();
 	

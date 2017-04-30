@@ -5,7 +5,7 @@
 size_t Generation::size = 500;
 size_t Generation::living = Generation::size*0.25;
 Fitness* Generation::fitness;
-std::mt19937_64* Generation::re;
+std::minstd_rand* Generation::re;
 
 
 Generation::Generation()

@@ -21,13 +21,13 @@ sf::Vector2f Chromosome::size(0, 0);
 float Chromosome::stddev_position = .1;
 float Chromosome::stddev_radius = .1;
 float Chromosome::stddev_color = 20;
-std::mt19937_64* Chromosome::re;
+std::minstd_rand* Chromosome::re;
 
 
 Chromosome::Chromosome()
 {
 	// this->genes is already empty
-	this->circle.setPointCount(50);
+	this->circle.setPointCount(36);
 }
 
 

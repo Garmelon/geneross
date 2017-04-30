@@ -15,7 +15,7 @@ public:
 	static float stddev_position;  // percent of max_radius
 	static float stddev_radius;    // percent of max_radius
 	static float stddev_color;
-	static std::mt19937_64* re;
+	static std::minstd_rand* re;
 	
 	Chromosome();  // create empty chromosome
 	Chromosome(Chromosome& father, Chromosome& mother);  // crossover

@@ -34,10 +34,10 @@ void main(void)
 	
 	// encode to rgba channels in current pixel
 	vec4 col = vec4(0.0, 0.0, 0.0, 1.0);
-// 	total = total/200.0;
-	col.r = mod(total,         256.0/255.0);
-	col.g = mod(total/256.0,   256.0/255.0);
-	col.b = mod(total/65536.0, 256.0/255.0);
+// 	total = total/255.0;
+	col.r = floor(mod(total*255.0,         256.0))/255.0;
+	col.g = floor(mod(total*255.0/256.0,   256.0))/255.0;
+	col.b = floor(mod(total*255.0/65536.0, 256.0))/255.0;
 // 	color.g = 0.0;
 // 	color.b = 0.0;
 // 	color.g = mod(total, 256.0/255.0);

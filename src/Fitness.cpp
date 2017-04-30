@@ -2,28 +2,20 @@
 
 #include <SFML/System.hpp>
 
-#include <iostream>
 
-Fitness::Fitness(sf::Texture target, float scale) :
+
+Fitness::Fitness(sf::Texture target) :
 	dummy(sf::TriangleFan, 4)
 {
 	this->target = target;
-	
 	sf::Vector2u targetSize = this->target.getSize();
-	
 	this->tex.create(targetSize.x, targetSize.y);
 	
-// 	this->view.reset(sf::FloatRect(0, 0, targetSize.x, targetSize.y));
-// 	this->view.setViewport(sf::FloatRect(0, 0, 1, 1));
-	
 	this->horizontal = targetSize.x >= targetSize.y;
-// 	this->horizontal = true;
-	std::cout << "Horizontal mode: " << horizontal << " " << targetSize.x << "." << targetSize.y << std::endl;
 	if (this->horizontal) {
 		targetSize.x = 1;
 	} else {
 		targetSize.y = 1;
-// 		this->comp.create(targetSize.x*scale, 2);
 	}
 	
 	this->comp.create(targetSize.x, targetSize.y);
@@ -51,59 +43,36 @@ bool Fitness::loadShader(std::string filename)
 }
 
 
-unsigned long long Fitness::of(Chromosome chr)
+unsigned long long Fitness::of(const Chromosome& chr)
 {
-	// first, render a reduced, shaderized version to RenderTextures
+	// first, render chr to a texture, so we can just compare two textures
 	this->tex.clear();
 	this->tex.draw(chr);
 	this->tex.display();
 	
+	// compare the two textures using the SUPER ADVANCED shader
 	this->comp.clear(sf::Color::Blue);
-// 	this->comp.setView(this->view);
 	this->comp.draw(this->dummy, &this->compshdr);
-// 	this->comp.draw(this->sprite, &this->compshdr);
-// 	this->comp.draw(this->sprite);
 	this->comp.display();
 	
-	// then, download the result as an image and add the pixels
+	// then, download the result as an image and extract the result
 	sf::Image image = this->comp.getTexture().copyToImage();
 	sf::Vector2u size = image.getSize();
-// 	std::cout << "Image size: " << size.x << " " << size.y << std::endl;
-	unsigned long long fitness = 0;
-// 	for (unsigned int x=0; x<size.x; ++x) {
-// 		for (unsigned int y=0; y<size.y; ++y) {
-// 			sf::Color color = image.getPixel(x, y);
-// 			fitness += color.r + color.g + color.b;
-// 		}
-// 	}
 	
+	unsigned long long fitness = 0;
 	if (this->horizontal) {
 		for (unsigned int y=0; y<size.y; ++y) {
 			sf::Color col = image.getPixel(0, y);
-// 			std::cout<<(int)col.r<<"|"<<(int)col.g<<"|"<<(int)col.b<<"|"<<(int)col.a<<std::endl;
-			fitness += ((unsigned long long)col.r);                    // 2^(8*0)
-			fitness += ((unsigned long long)col.g)*256;                // 2^(8*1)
-			fitness += ((unsigned long long)col.b)*65536;              // 2^(8*2)
-// 			fitness += (unsigned long long)col.a*16777216;             // 2^(8*3)
-// 			col = image.getPixel(1, y);
-// 			fitness += col.r*4294967296;         // 2^(8*4)
-// 			fitness += col.g*1099511627776;      // 2^(8*5)
-// 			fitness += col.b*281474976710656;    // 2^(8*6)
-// 			fitness += col.a*72057594037927936;  // 2^(8*7)
+			fitness += (unsigned long long)col.r;                    // 2^(8*0) - first byte
+			fitness += (unsigned long long)col.g*256;                // 2^(8*1) - second byte
+			fitness += (unsigned long long)col.b*65536;              // 2^(8*2) - third byte
 		}
 	} else {
 		for (unsigned int x=0; x<size.x; ++x) {
 			sf::Color col = image.getPixel(x, 0);
-// 			std::cout<<(int)col.r<<"|"<<(int)col.g<<"|"<<(int)col.b<<"|"<<(int)col.a<<std::endl;
-			fitness +=  (unsigned long long)col.r;                     // 2^(8*0)
-			fitness += ((unsigned long long)col.g)*256;                // 2^(8*1)
-			fitness += ((unsigned long long)col.b)*65536;              // 2^(8*2)
-// 			fitness += ((unsigned long int)col.a)*16777216;            // 2^(8*3)
-// 			col = image.getPixel(x, 1);
-// 			fitness += col.r*4294967296;         // 2^(8*4)
-// 			fitness += col.g*1099511627776;      // 2^(8*5)
-// 			fitness += col.b*281474976710656;    // 2^(8*6)
-// 			fitness += col.a*72057594037927936;  // 2^(8*7)
+			fitness += (unsigned long long)col.r;                    // 2^(8*0) - first byte
+			fitness += (unsigned long long)col.g*256;                // 2^(8*1) - second byte
+			fitness += (unsigned long long)col.b*65536;              // 2^(8*2) - third byte
 		}
 	}
 	

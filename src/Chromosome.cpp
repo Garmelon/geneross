@@ -23,6 +23,8 @@ float Chromosome::stddev_radius = .1;
 float Chromosome::stddev_color = 20;
 std::minstd_rand* Chromosome::re;
 
+sf::CircleShape Chromosome::circle;
+
 
 Chromosome::Chromosome()
 {
@@ -115,12 +117,13 @@ void Chromosome::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	this->circle.setOrigin(Chromosome::size);
 	this->circle.setFillColor(sf::Color::White);
 	target.draw(this->circle, states);
+	
 	for (auto gene : this->genes) {
-		this->circle.setPosition(gene.position);
-		this->circle.setRadius(gene.radius);
-		this->circle.setOrigin(sf::Vector2f(gene.radius, gene.radius));
-		this->circle.setFillColor(gene.color);
-		target.draw(this->circle, states);
+		Chromosome::circle.setPosition(gene.position);
+		Chromosome::circle.setRadius(gene.radius);
+		Chromosome::circle.setOrigin(sf::Vector2f(gene.radius, gene.radius));
+		Chromosome::circle.setFillColor(gene.color);
+		target.draw(Chromosome::circle, states);
 	}
 }
 

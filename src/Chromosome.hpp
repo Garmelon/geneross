@@ -27,12 +27,16 @@ public:
 	size_t length();
 	
 protected:
+	static sf::CircleShape circle;
+	
 	struct Gene
 	{
 		sf::Vector2f position;
 		float radius;
 		sf::Color color;
 	};
+	
+	std::vector<Gene> genes;
 	
 	float maxRadius();
 	
@@ -43,7 +47,4 @@ protected:
 	selectSegment(std::vector<Gene>& genes);
 	
 	std::vector<Gene>::iterator selectGene(std::vector<Gene>& genes);
-	
-	mutable sf::CircleShape circle;  // drawing the chromosome, one draw call at a time
-	std::vector<Gene> genes;
 };

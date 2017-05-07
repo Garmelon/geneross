@@ -1,50 +1,45 @@
 #pragma once
 
-#include <random>
-#include <utility>
+#include <memory>
+#include <unordered_set>
 #include <vector>
 #include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
+
+#include "Genes.hpp"
 
 
 
 class Chromosome : public sf::Drawable
 {
 public:
-	static sf::Vector2f size;
-	static float stddev_position;  // percent of max_radius
-	static float stddev_radius;    // percent of max_radius
-	static float stddev_color;
+	enum GeneType
+	{
+		Circle
+	};
+	
 	static std::minstd_rand* re;
+	
+	static void allowGeneType(GeneType gt, bool allowed=true);
+	static bool isGeneTypeAllowed(GeneType gt);
 	
 	Chromosome();  // create empty chromosome
 	Chromosome(Chromosome& father, Chromosome& mother);  // crossover
 	
-	void mutate();  // randomly mutate chromosome's genes
-	
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	
-	size_t length();
+	void mutate();  // randomly mutate chromosome's genes
 	
-protected:
-	static sf::CircleShape circle;
+	size_t length() const;
 	
-	struct Gene
-	{
-		sf::Vector2f position;
-		float radius;
-		sf::Color color;
-	};
+private:
+	static std::unordered_set<GeneType> allowedGeneTypes;
 	
-	std::vector<Gene> genes;
+	std::vector<std::unique_ptr<Gene>> genes;
 	
-	float maxRadius();
+	std::vector<std::unique_ptr<Gene>>::iterator selectGene();
 	
-	Gene randomGene();
-	void mutateGene(Gene& gene);
-	
-	std::pair<std::vector<Gene>::iterator, std::vector<Gene>::iterator>
-	selectSegment(std::vector<Gene>& genes);
-	
-	std::vector<Gene>::iterator selectGene(std::vector<Gene>& genes);
+	void addGene();
+	void removeGene();
+	void swapGenes();
+	void mutateGene();
 };

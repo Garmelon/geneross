@@ -12,6 +12,14 @@ public:
 	static std::minstd_rand* re;
 	static sf::Vector2f size;
 	
+	enum GeneType
+	{
+		Circle,
+		Triangle
+	};
+	
+	GeneType type;
+	
 	virtual ~Gene();
 	
 	virtual void randomize() =0;
@@ -23,6 +31,8 @@ public:
 class GeneCircle : public Gene
 {
 public:
+	GeneType type = Gene::Circle;
+	
 	virtual ~GeneCircle();
 	
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -51,6 +61,8 @@ private:
 class GeneTriangle : public Gene
 {
 public:
+	GeneType type = Gene::Triangle;
+	
 	virtual ~GeneTriangle();
 	
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;

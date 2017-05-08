@@ -3,10 +3,10 @@
 
 
 std::minstd_rand* Chromosome::re;
-std::unordered_set<Chromosome::GeneType> Chromosome::allowedGeneTypes;
+std::unordered_set<Gene::GeneType> Chromosome::allowedGeneTypes;
 
 
-void Chromosome::allowGeneType(GeneType gt, bool allowed)
+void Chromosome::allowGeneType(Gene::GeneType gt, bool allowed)
 {
 	if (allowed) {
 		Chromosome::allowedGeneTypes.insert(gt);
@@ -16,7 +16,7 @@ void Chromosome::allowGeneType(GeneType gt, bool allowed)
 }
 
 
-bool Chromosome::isGeneTypeAllowed(GeneType gt)
+bool Chromosome::isGeneTypeAllowed(Gene::GeneType gt)
 {
 	return Chromosome::allowedGeneTypes.find(gt) != Chromosome::allowedGeneTypes.end();
 }
@@ -35,15 +35,12 @@ Chromosome::Chromosome(Chromosome& father, Chromosome& mother)
 	
 	// reserve to father's size/capacity, and shrink_to_fit afterwards?
 	
-	Gene* geneptr;
 	for (auto it=father.genes.begin(); it!=split_father; ++it) {
-		*geneptr = **it;
-		this->genes.push_back(std::unique_ptr<Gene>(geneptr));
+		this->genes.push_back(std::unique_ptr<Gene>(this->copyGene(it->get())));
 	}
 	
 	for (auto it=split_mother; it!=mother.genes.end(); ++it) {
-		*geneptr = **it;
-		this->genes.push_back(std::unique_ptr<Gene>(geneptr));
+		this->genes.push_back(std::unique_ptr<Gene>(this->copyGene(it->get())));
 	}
 }
 
@@ -93,8 +90,49 @@ std::vector<std::unique_ptr<Gene>>::iterator Chromosome::selectGene()
 }
 
 
+Gene* Chromosome::copyGene(Gene* gene)
+{
+	switch (gene->type) {
+		case Gene::Circle:
+		{
+			GeneCircle* newgene = new GeneCircle();
+			*newgene = *static_cast<GeneCircle*>(gene);
+			return newgene;
+		}
+		case Gene::Triangle:
+		{
+			GeneTriangle* newgene = new GeneTriangle();
+			*newgene = *static_cast<GeneTriangle*>(gene);
+			return newgene;
+		}
+	}
+	
+	return nullptr;
+}
+
+
+Gene* Chromosome::createGene(Gene::GeneType type)
+{
+	switch (type) {
+		case Gene::Circle:
+			return new GeneCircle();
+		case Gene::Triangle:
+			return new GeneTriangle();
+	}
+	
+	return nullptr;
+}
+
+
 void Chromosome::addGene()
 {
+	std::uniform_int_distribution<> typedist(0, this->allowedGeneTypes.size()-1);
+	
+	auto it = this->allowedGeneTypes.begin();
+	std::advance(it, typedist(*Gene::re));
+	
+	const Gene::GeneType type = *it;
+	this->genes.push_back(std::unique_ptr<Gene>(this->createGene(type)));
 }
 
 
@@ -113,9 +151,6 @@ void Chromosome::swapGenes()
 	auto it_two = this->selectGene();
 	if (it_one != this->genes.end() && it_two != this->genes.end() && it_one != it_two) {
 		it_one->swap(*it_two);
-// 		auto tmp = *it_one;
-// 		*it_one = *it_two;
-// 		*it_two = tmp;
 	}
 }
 

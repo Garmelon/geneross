@@ -4,109 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include "Chromosome.hpp"
 #include "Fitness.hpp"
-#include "Generation.hpp"
-
-/*
- * UI Modes:
- * 
- * 1) generation screen
- *    - show all chromosomes at once
- *    - show selection
- *     - reorder things
- *     - kill off things
- *    - ... and breeding
- *     - fill up things
- *    - show fitness for individuals?
- *    - show stats for generation?
- * 
- * 1.5) mating screen
- *      - 
- * 
- * 2) fitness screen
- *    - show original image
- *    - show currently evaluated image
- *    - allows for pausing/singlestepping
- *    - show stats at the bottom
- * 
- * 3) fast-forward screen
- *    - show original image
- *    - show best of previous generation
- *    - show stats at the bottom
- * 
- * logical states:
- * 1) selection
- * 2) crossover
- * 3) mutation
- * 
- * program states:
- * 1) evaluating
- *    - when going slow: fitness screen
- *    - when fast-forwarding: fast-forward screen
- * 2) selecting
- * 3) crossing over
- * 4) mutating
- * Step 2-4
- *  - in generation screen
- *  - invisible?
- */
-
-/*
- * Project structure plan:
- * - Chromosome
- *  - static (class) size variables
- *   - prevents situation where two differently-sized chromosomes mate
- *  - can mate
- *  - can mutate
- *   - add circle
- *   - remove circle
- *   - change circle (stays at same layer)
- *   - maybe change circle color, size, position separately, or all at once
- *   - move circle (between layers)
- *  - can be rendered to texture
- * - Comparator (fitness tester) (maybe just function in Generations)
- *  - can render progress/info to window (simple renderable)
- *   - c.compare() sets variables in instance, draw directly after compare()-ing
- *   - screen update logic in Generations
- *  - initialized with size (or static size variables?)
- *  - compares two textures
- * - Generations
- *  - keeps track of Chromosomes
- *  - applies fitness function to Chromosomes
- *  - applies selection to Chromosomes
- *  - makes Chromosomes mate and mutate
- *   - mutate only freshly mated chromosomes
- *  - displays various states of genetic algorithm
- * - Graph
- *  - displays nice graph for use with Generations
- * - Button?
- */
-
-/*
- * Generations states:
- * - display generation stats (resting) (all other visual states optional)
- * - run modes: step-by-step, visual, fast, off?
- * - toggles for visibility of steps?
- * - display evaluating fitness process
- *  - step-through: both images, image diff, chromosome stats (fitness etc.), generation stats
- *                  autorun mode
- *  - fast: only generation stats, updated every half second or so
- *  - off: nothing rendered at all
- * - display selection process
- *  - show all chromosomes, in tiny RenderTextures?
- *  - show big version on hover-over, including original image?
- *  - sort and move to respective position
- *  - blend out deleted ones (set opacity to 0)
- * - display mating process
- *  - show parents
- *  - show result
- *  - show chromosomes? (string of circles maybe?)
- *  - show parent fitness?
- * 
- * We've come full circle!
- * 
- * Further notes:
- * - controls for stepping <-> runnning with delay
- */
 
 int main()
 {
@@ -115,296 +12,48 @@ int main()
 	std::minstd_rand randomEngine;
 	randomEngine.seed(time(nullptr));
 	
-	sf::Texture target;
-	target.loadFromFile("tom-face.png");
+	Chromosome::allowGeneType(Gene::Circle);
 	
-	Chromosome::size = sf::Vector2f(target.getSize());
-// 	Chromosome::size = sf::Vector2f(winW/2, winH/2);
 	Chromosome::re = &randomEngine;
+	Gene::re = &randomEngine;
 	
-// 	Chromosome targetc;
-// 	for (int i=0; i<100; ++i) targetc.mutate();
-// 	sf::RenderTexture targettex;
-// 	targettex.create(winW/2, winH/2);
-// 	targettex.clear();
-// 	targettex.draw(targetc);
-// 	targettex.display();
-// 	sf::Texture target = targettex.getTexture();
-	
-	Fitness fitn(target);
+	Fitness fitn;
+	fitn.loadTarget("tom-face.png");
 	fitn.loadShader("compare.glsl");
 	
-	Generation::size = 500;
-	Generation::living = 150;
-	Generation::fitness = &fitn;
-	Generation::re = &randomEngine;
-	Generation genr;
-	unsigned int gencnt = 0; // all white is generation 0
-	genr.updateFitness();
-// 	for (auto ind : genr.individuals) {
-// 		std::cout << ind.fitness << std::endl;
-// 	}
-// 	for (auto it=genr.individuals.begin(); it!=genr.individuals.end(); ++it) {
-// 		std::cout << "alive: " << it->alive << " fitnev: " << it->fitnessEvaluated << " fitn: " << it->fitness << std::endl;
-// 	}
+	Gene::size = sf::Vector2f(fitn.target.getSize());
 	
-	// displaying stuff
-	sf::Sprite starget(target);
-	sf::View vbest(sf::FloatRect(0, 0, target.getSize().x, target.getSize().y));
-	sf::View vmed(sf::FloatRect(0, 0, target.getSize().x, target.getSize().y));
-	sf::View vworst(sf::FloatRect(0, 0, 1/*target.getSize().x*/, target.getSize().y));
-	vbest.setViewport(sf::FloatRect(.5, 0, .5, .5));
-	vmed.setViewport(sf::FloatRect(0, .5, .5, .5));
-	vworst.setViewport(sf::FloatRect(.5, .5, .5, .5));
+	Chromosome a;
+	for (int i=0; i<1000; ++i) a.mutate();
+	Chromosome b(a);
+	for (int i=0; i<10; ++i) b.mutate();
+	Chromosome c(a);
+	Chromosome d(a, b);
 	
-	sf::Sprite sprite(fitn.comp.getTexture());
+	std::cout << a.length() << " | " << b.length() << " | " << c.length() << " | " << d.length() << std::endl;
+	
+	sf::Sprite ts(fitn.target.getTexture());
+	sf::Sprite cs(fitn.chromosome.getTexture());
 	
 	sf::RenderWindow window(sf::VideoMode(winW, winH), "gross");
-	window.setMouseCursorVisible(false); // hide the cursor
+// 	window.setMouseCursorVisible(false);
 	
 	while (window.isOpen()) {
 		sf::Event event;
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::KeyPressed) {
-// 				for (auto ind : genr.individuals) {
-// 					std::cout << ind.fitness << std::endl;
-// 				}
-				
-				std::cout << genr.individuals[0].fitness << std::endl;
-			
 			}
 		}
 		
-		// calculate next generation
-		genr.cull();
-		genr.reproduce(0);
-		genr.updateFitness();
-		
-// 		genr.cull();
-// 		genr.reproduce(0);
-// 		genr.updateFitness();
-// 		genr.updateFitness();
-// 		for (auto it=genr.individuals.rbegin(); it!=genr.individuals.rend(); ++it) {
-// 			if (it->fitnessEvaluated) {
-// 				std::cout << "alive: " << it->alive << " fitnev: " << it->fitnessEvaluated << " fitn: " << it->fitness << std::endl;
-// 			}
-// 		}
-		
 		// display results
 		window.clear();
-		window.draw(starget);
-		window.setView(vbest ); window.draw(genr.individuals[0            ].chromosome);
-		window.setView(vmed  ); window.draw(genr.individuals[genr.living/2].chromosome);
-		window.setView(vworst); //window.draw(genr.individuals[genr.living-1].chromosome);
-		window.draw(sprite);
-		window.setView(window.getDefaultView());
+		fitn.render(a); cs.setPosition(  0,   0); window.draw(cs);
+		fitn.render(b); cs.setPosition(240,   0); window.draw(cs);
+		fitn.render(c); cs.setPosition(  0, 240); window.draw(cs);
+		fitn.render(d); cs.setPosition(240, 240); window.draw(cs);
 		window.display();
 		
-		std::cout << "Generation finished: " << ++gencnt << " (winner's length: " << genr.individuals[0].chromosome.length() << ")" << std::endl;
+// 		std::cout << "Generation finished: " << ++gencnt << " (winner's length: "
+// 		std::cout << genr.individuals[0].chromosome.length() << ")" << std::endl;
 	}
 }
-
-// int main() {
-// 	const float winW = 480;
-// 	const float winH = 480;
-// 	std::mt19937_64 randomEngine;
-// 	randomEngine.seed(time(nullptr));
-// 	randomEngine.seed(1);
-	
-// 	std::uniform_int_distribution<> testdist(2, 7);
-// 	for (int i=0; i<100; ++i) std::cout << testdist(randomEngine) << std::endl;
-	
-// 	sf::RenderWindow window(sf::VideoMode(winW, winH), "gross");
-// 	window.setMouseCursorVisible(false); // hide the cursor
-	
-	/* test mating
-	Chromosome::size = sf::Vector2f(winW/2, winH/2);
-	Chromosome::re = &randomEngine;
-	Chromosome father, mother, child, monster;
-	sf::View vfather(sf::FloatRect(0, 0, winW/2, winH/2));
-	sf::View vmother(sf::FloatRect(0, 0, winW/2, winH/2));
-	sf::View vchild(sf::FloatRect(0, 0, winW/2, winH/2));
-	sf::View vmonster(sf::FloatRect(0, 0, winW/2, winH/2));
-	vfather.setViewport(sf::FloatRect(0, 0, .5, .5));
-	vmother.setViewport(sf::FloatRect(.5, 0, .5, .5));
-	vchild.setViewport(sf::FloatRect(0, .5, .5, .5));
-	vmonster.setViewport(sf::FloatRect(.5, .5, .5, .5));
-	*/
-	
-	/*
-	Chromosome::size = sf::Vector2f(winW/2, winH/2);
-	Chromosome::re = &randomEngine;
-	Chromosome target, chr;
-	
-	sf::View vtarget(sf::FloatRect(0, 0, winW/2, winH/2));
-	sf::View vchr(sf::FloatRect(0, 0, winW/2, winH/2));
-	sf::View vtex(sf::FloatRect(0, 0, winW/2, winH/2));
-	sf::View vcomp(sf::FloatRect(0, 0, winW/2, winH/2));
-	vtarget.setViewport(sf::FloatRect(0, 0, 0.5, 0.5));
-	vchr.setViewport(sf::FloatRect(0.5, 0, 0.5, 0.5));
-	vtex.setViewport(sf::FloatRect(0, 0.5, 0.5, 0.5));
-	vcomp.setViewport(sf::FloatRect(0.5, 0.5, 0.5, 0.5));
-	for (int i=0; i<1000; ++i) target.mutate();
-	
-	sf::RenderTexture targettex;
-	targettex.create(winW/2, winH/2);
-// 	targettex.clear(sf::Color::White);
-	targettex.clear();
-	targettex.draw(target);
-	targettex.display();
-	
-	Fitness fitn(targettex.getTexture(), 1);
-	if (!fitn.loadShader("compare.glsl")) {
-		std::cout << "Shader not loaded" << std::endl;
-		return 123;
-	}
-	sf::Sprite starget(fitn.target);
-	sf::Sprite stex(fitn.tex.getTexture());
-	sf::Sprite scomp(fitn.comp.getTexture());
-	*/
-	
-	/*
-	// load images
-	sf::Texture base;
-	sf::Texture comp;
-	base.loadFromFile("tom-face.png");
-	comp.loadFromFile("tom-face-christmas.png");
-	sf::Sprite sprbase(base);
-	sf::Sprite sprcomp(comp);
-	
-	sf::Shader compshdr;
-	compshdr.loadFromFile("compare.glsl", sf::Shader::Fragment);
-	
-	if (!compshdr.isAvailable()) {
-		std::cout << "The shader is not available\n";
-		return 1;
-	}
-	
-	compshdr.setUniform("base", base);
-	compshdr.setUniform("curr", comp);
-	compshdr.setUniform("size", sf::Vector2f(240, 240));
-	compshdr.setUniform("offs", sf::Vector2f(0, 0));
-	
-	sf::Shader medcompshdr;
-	medcompshdr.loadFromFile("compare_med.glsl", sf::Shader::Fragment);
-	if (!medcompshdr.isAvailable()) {
-		std::cout << "The medshader is not available\n";
-		return 1;
-	}
-	medcompshdr.setUniform("base", base);
-	medcompshdr.setUniform("curr", comp);
-	medcompshdr.setUniform("size", sf::Vector2f(240, 240));
-	medcompshdr.setUniform("offs", sf::Vector2f(240, 0));
-	
-	// Set the resolution parameter (the resoltion is divided to make the fire smaller)
-// 	shader.setParameter("resolution", sf::Vector2f(winW / 2, winH / 2));
-	
-	// Use a timer to obtain the time elapsed
-// 	sf::Clock clk;
-// 	clk.restart(); // start the timer
-	*/
-	
-	
-	
-// 	while (window.isOpen()) {
-		// Event handling
-// 		sf::Event event;
-		
-// 		while (window.pollEvent(event)) {
-			// Exit the app when a key is pressed
-// 			if (event.type == sf::Event::KeyPressed) {
-				/* test mating
-				father = Chromosome();
-// 				mother = Chromosome();
-				for (int i=0; i<1000; ++i) {
-					father.mutate();
-// 					mother.mutate();
-				}
-				mother = father;
-				for (int i=0; i<20; ++i) {
-					mother.mutate();
-				}
-				child = Chromosome(father, mother);
-				monster = child;
-				monster.mutate();
-				
-				std::cout << "----------SIZES----------" << std::endl;
-				std::cout << "father size:  " << father.length() << std::endl;
-				std::cout << "mother size:  " << mother.length() << std::endl;
-				std::cout << "child size:   " << child.length() << std::endl;
-				std::cout << "monster size: " << monster.length() << std::endl;
-				*/
-				
-				/*
-				chr = target;
-				for (int i=0; i<10; ++i) {
-					chr.mutate();
-				}
-				
-				std::cout << "----------SIZES----------" << std::endl;
-				std::cout << "target size: " << target.length() << std::endl;
-				std::cout << "chr size:    " << chr.length() << std::endl;
-				std::cout << "fitness:     " << fitn.of(chr) << std::endl;
-				*/
-// 			}
-// 		}
-		
-		// Set the others parameters who need to be updated every frames
-// 		shader.setParameter("time", clk.getElapsedTime().asSeconds());
-		
-// 		sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-// 		shader.setParameter("mouse", sf::Vector2f(mousePos.x, mousePos.y - winH));
-		
-		/* test mating
-		window.clear();
-		window.setView(vfather); window.draw(father);
-		window.setView(vmother); window.draw(mother);
-		window.setView(vchild); window.draw(child);
-		window.setView(vmonster); window.draw(monster);
-		window.display();
-		*/
-		
-// 		window.clear(sf::Color::White)
-		
-		/*
-		window.clear();
-		window.setView(vtarget); window.draw(starget);
-		window.setView(vchr); window.draw(chr);
-		window.setView(vtex); window.draw(stex);
-		window.setView(vcomp); window.draw(scomp);
-		window.display();
-		*/
-		
-		/* benchmark
-		sf::Clock clk;
-		clk.restart(); // start the timer
-		for (int h=0; h<10000; ++h) {
-			chr = target;
-// 			for (int i=0; i<20; ++i) {
-				chr.mutate();
-// 			}
-			
-			fitn.of(chr);
-// 			std::cout << fitn.of(chr) << "\n";
-		}
-		std::cout << "10000 images: " << clk.getElapsedTime().asSeconds() << std::endl;
-		return 2;
-		*/
-		
-		/*
-		window.draw(sprbase);
-		
-		sprcomp.setPosition(240, 0);
-		window.draw(sprcomp);
-		
-		sprcomp.setPosition(0, 240);
-		window.draw(sprcomp, &compshdr);
-		
-		sprcomp.setPosition(240, 240);
-		window.draw(sprcomp, &medcompshdr);
-		*/
-		
-// 	}
-	
-// 	return 0;
-// }

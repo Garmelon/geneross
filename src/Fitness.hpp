@@ -8,18 +8,28 @@
 class Fitness
 {
 public:
-	Fitness(sf::Texture target);
+	static sf::Color backgroundColor;
+	
+	Fitness();
 	bool loadShader(std::string filename);
+	bool loadTarget(std::string filename);
 	
-	unsigned long long of(const Chromosome& chr);
+	void render(const Chromosome& chr);
+	unsigned long long compute();
 	
-	sf::Texture target;      // base image to compare against
-	sf::RenderTexture tex;   // big RenderWindow containg the Chromosome to be evaluated
+	unsigned long long of(const Chromosome& chr);  // uses render and compute
+	
+	sf::RenderTexture target;      // contains image to compare against
+	sf::RenderTexture chromosome;  // contains the Chromosome to be evaluated
+	
 	sf::RenderTexture comp;  // smaller RenderWindow which is downloaded as Image
 	
-	sf::VertexArray dummy;
 	bool horizontal;
 	
 private:
+	bool shaderLoaded = false;
+	bool targetLoaded = false;
+	
 	sf::Shader compshdr;  // shader to perform pixel-wise image diff with
+	sf::VertexArray dummy;  // something to render so that the shader is run on every pixel
 };

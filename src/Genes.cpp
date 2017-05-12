@@ -19,6 +19,37 @@ std::minstd_rand* Gene::re;
 sf::Vector2f Gene::size;
 
 
+Gene* Gene::create(GeneType type)
+{
+	Gene* gene = nullptr;
+	
+	switch (type) {
+		case Gene::Circle:
+			gene = new GeneCircle();
+			break;
+		case Gene::Triangle:
+			gene = new GeneTriangle();
+			break;
+	}
+	
+	gene->randomize();
+	return gene;
+}
+
+
+Gene* Gene::copy(Gene* gene)
+{
+	switch (gene->type) {
+		case Gene::Circle:
+			return new GeneCircle(*static_cast<GeneCircle*>(gene));
+		case Gene::Triangle:
+			return new GeneTriangle(*static_cast<GeneTriangle*>(gene));
+	}
+	
+	return nullptr;
+}
+
+
 Gene::~Gene()
 {
 }
@@ -31,7 +62,6 @@ float GeneCircle::stddev_position = .1;  // in percent of min side length
 float GeneCircle::stddev_radius = .1;    // in percent of max radius
 float GeneCircle::stddev_color = 20;     // absolute value
 
-
 GeneCircle::~GeneCircle()
 {
 }
@@ -41,6 +71,7 @@ void GeneCircle::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	this->circle.setPosition(this->position);
 	this->circle.setRadius(this->radius);
+	this->circle.setOrigin(this->radius, this->radius);
 	this->circle.setFillColor(this->color);
 	target.draw(this->circle, states);
 }
@@ -48,6 +79,16 @@ void GeneCircle::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 void GeneCircle::randomize()
 {
+	std::uniform_int_distribution<> colordist(0, 255);
+	this->color.r = colordist(*Gene::re);
+	this->color.g = colordist(*Gene::re);
+	this->color.b = colordist(*Gene::re);
+	this->color.a = colordist(*Gene::re);
+	
+	std::uniform_real_distribution<> floatdist(0, 1);
+	this->position.x = floatdist(*Gene::re)*Gene::size.x;
+	this->position.y = floatdist(*Gene::re)*Gene::size.y;
+	this->radius = floatdist(*Gene::re)*this->maxRadius();
 }
 
 

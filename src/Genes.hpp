@@ -18,6 +18,10 @@ public:
 		Triangle
 	};
 	
+	static Gene* create(GeneType type);
+	static Gene* copy(Gene* gene);
+	
+	
 	GeneType type;
 	
 	virtual ~Gene();
@@ -31,6 +35,10 @@ public:
 class GeneCircle : public Gene
 {
 public:
+	static float stddev_position;
+	static float stddev_radius;
+	static float stddev_color;
+	
 	GeneType type = Gene::Circle;
 	
 	virtual ~GeneCircle();
@@ -41,9 +49,6 @@ public:
 	
 private:
 	static sf::CircleShape circle;
-	static float stddev_position;
-	static float stddev_radius;
-	static float stddev_color;
 	
 	sf::Vector2f position;
 	float radius;

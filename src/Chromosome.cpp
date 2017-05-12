@@ -28,6 +28,16 @@ Chromosome::Chromosome()
 }
 
 
+Chromosome::Chromosome(Chromosome& father)
+{
+	// reserve to father's size/capacity?
+	
+	for (auto& ptr : father.genes) {
+		this->genes.push_back(std::unique_ptr<Gene>(Gene::copy(ptr.get())));
+	}
+}
+
+
 Chromosome::Chromosome(Chromosome& father, Chromosome& mother)
 {
 	auto split_father = father.selectGene();
@@ -36,11 +46,11 @@ Chromosome::Chromosome(Chromosome& father, Chromosome& mother)
 	// reserve to father's size/capacity, and shrink_to_fit afterwards?
 	
 	for (auto it=father.genes.begin(); it!=split_father; ++it) {
-		this->genes.push_back(std::unique_ptr<Gene>(this->copyGene(it->get())));
+		this->genes.push_back(std::unique_ptr<Gene>(Gene::copy(it->get())));
 	}
 	
 	for (auto it=split_mother; it!=mother.genes.end(); ++it) {
-		this->genes.push_back(std::unique_ptr<Gene>(this->copyGene(it->get())));
+		this->genes.push_back(std::unique_ptr<Gene>(Gene::copy(it->get())));
 	}
 }
 
@@ -90,40 +100,6 @@ std::vector<std::unique_ptr<Gene>>::iterator Chromosome::selectGene()
 }
 
 
-Gene* Chromosome::copyGene(Gene* gene)
-{
-	switch (gene->type) {
-		case Gene::Circle:
-		{
-			GeneCircle* newgene = new GeneCircle();
-			*newgene = *static_cast<GeneCircle*>(gene);
-			return newgene;
-		}
-		case Gene::Triangle:
-		{
-			GeneTriangle* newgene = new GeneTriangle();
-			*newgene = *static_cast<GeneTriangle*>(gene);
-			return newgene;
-		}
-	}
-	
-	return nullptr;
-}
-
-
-Gene* Chromosome::createGene(Gene::GeneType type)
-{
-	switch (type) {
-		case Gene::Circle:
-			return new GeneCircle();
-		case Gene::Triangle:
-			return new GeneTriangle();
-	}
-	
-	return nullptr;
-}
-
-
 void Chromosome::addGene()
 {
 	std::uniform_int_distribution<> typedist(0, this->allowedGeneTypes.size()-1);
@@ -132,7 +108,11 @@ void Chromosome::addGene()
 	std::advance(it, typedist(*Gene::re));
 	
 	const Gene::GeneType type = *it;
-	this->genes.push_back(std::unique_ptr<Gene>(this->createGene(type)));
+	
+	Gene* gene = Gene::create(type);
+	gene->randomize();
+	this->genes.push_back(std::unique_ptr<Gene>(gene));
+// 	this->genes.push_back(std::unique_ptr<Gene>(Gene::create(type)));
 }
 
 

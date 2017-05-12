@@ -18,6 +18,7 @@ public:
 	static bool isGeneTypeAllowed(Gene::GeneType gt);
 	
 	Chromosome();  // create empty chromosome
+	Chromosome(Chromosome& father);  // copy
 	Chromosome(Chromosome& father, Chromosome& mother);  // crossover
 	
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -32,8 +33,6 @@ private:
 	std::vector<std::unique_ptr<Gene>> genes;
 	
 	std::vector<std::unique_ptr<Gene>>::iterator selectGene();
-	Gene* copyGene(Gene* gene);
-	Gene* createGene(Gene::GeneType type);
 	
 	void addGene();
 	void removeGene();

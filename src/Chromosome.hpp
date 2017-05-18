@@ -18,8 +18,11 @@ public:
 	static bool isGeneTypeAllowed(Gene::GeneType gt);
 	
 	Chromosome();  // create empty chromosome
-	Chromosome(Chromosome& father);  // copy
-	Chromosome(Chromosome& father, Chromosome& mother);  // crossover
+	Chromosome(const Chromosome& father, const Chromosome& mother);  // crossover
+	
+	Chromosome(const Chromosome& father);  // copy constructor
+// 	Chromosome& operator=(const Chromosome& chr) = delete;  // copy assignment operator
+	Chromosome& operator=(const Chromosome& chr);  // copy assignment operator
 	
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	
@@ -33,6 +36,7 @@ private:
 	std::vector<std::unique_ptr<Gene>> genes;
 	
 	std::vector<std::unique_ptr<Gene>>::iterator selectGene();
+	std::vector<std::unique_ptr<Gene>>::const_iterator selectConstGene() const;
 	
 	void addGene();
 	void removeGene();

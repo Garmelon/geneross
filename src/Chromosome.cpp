@@ -28,20 +28,10 @@ Chromosome::Chromosome()
 }
 
 
-Chromosome::Chromosome(Chromosome& father)
+Chromosome::Chromosome(const Chromosome& father, const Chromosome& mother)
 {
-	// reserve to father's size/capacity?
-	
-	for (auto& ptr : father.genes) {
-		this->genes.push_back(std::unique_ptr<Gene>(Gene::copy(ptr.get())));
-	}
-}
-
-
-Chromosome::Chromosome(Chromosome& father, Chromosome& mother)
-{
-	auto split_father = father.selectGene();
-	auto split_mother = mother.selectGene();
+	auto split_father = father.selectConstGene();
+	auto split_mother = mother.selectConstGene();
 	
 	// reserve to father's size/capacity, and shrink_to_fit afterwards?
 	
@@ -52,6 +42,30 @@ Chromosome::Chromosome(Chromosome& father, Chromosome& mother)
 	for (auto it=split_mother; it!=mother.genes.end(); ++it) {
 		this->genes.push_back(std::unique_ptr<Gene>(Gene::copy(it->get())));
 	}
+}
+
+
+Chromosome::Chromosome(const Chromosome& other)
+{
+	// reserve to other's size/capacity?
+	
+	for (auto& ptr : other.genes) {
+		this->genes.push_back(std::unique_ptr<Gene>(Gene::copy(ptr.get())));
+	}
+}
+
+
+Chromosome& Chromosome::operator=(const Chromosome& other)
+{
+	// reserve to other's size/capacity?
+	
+	if (this != &other) {
+		for (auto& ptr : other.genes) {
+			this->genes.push_back(std::unique_ptr<Gene>(Gene::copy(ptr.get())));
+		}
+	}
+	
+	return *this;
 }
 
 
@@ -90,6 +104,17 @@ size_t Chromosome::length() const
 
 
 std::vector<std::unique_ptr<Gene>>::iterator Chromosome::selectGene()
+{
+	if (genes.empty()) {
+		return this->genes.end();
+	} else {
+		std::uniform_int_distribution<> posdist(0, this->genes.size()-1);
+		return genes.begin() + posdist(*Chromosome::re);
+	}
+}
+
+
+std::vector<std::unique_ptr<Gene>>::const_iterator Chromosome::selectConstGene() const
 {
 	if (genes.empty()) {
 		return this->genes.end();

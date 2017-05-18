@@ -21,6 +21,12 @@ public:
 	static Gene* create(GeneType type);
 	static Gene* copy(Gene* gene);
 	
+	// common randomizations/mutations
+	static void randomizeColor(sf::Color& color);
+	static void mutateColor(sf::Color& color, float stddev);
+	static void randomizePosition(sf::Vector2f& position);
+	static void mutatePosition(sf::Vector2f& position, float stddev);
+	
 	
 	GeneType type;
 	
@@ -39,8 +45,7 @@ public:
 	static float stddev_radius;
 	static float stddev_color;
 	
-	GeneType type = Gene::Circle;
-	
+	GeneCircle();
 	virtual ~GeneCircle();
 	
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -54,10 +59,7 @@ private:
 	float radius;
 	sf::Color color;
 	
-	void mutatePosition();
 	void mutateRadius();
-	void mutateColor();
-	
 	float maxRadius();
 };
 
@@ -66,8 +68,10 @@ private:
 class GeneTriangle : public Gene
 {
 public:
-	GeneType type = Gene::Triangle;
+	static float stddev_position;
+	static float stddev_color;
 	
+	GeneTriangle();
 	virtual ~GeneTriangle();
 	
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -75,5 +79,10 @@ public:
 	virtual void mutate();
 	
 private:
-	// TODO: vertices
+	static sf::VertexArray vertices;
+	
+	sf::Vector2f pos1;
+	sf::Vector2f pos2;
+	sf::Vector2f pos3;
+	sf::Color color;
 };

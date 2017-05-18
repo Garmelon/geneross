@@ -13,6 +13,7 @@ int main()
 	randomEngine.seed(time(nullptr));
 	
 	Chromosome::allowGeneType(Gene::Circle);
+	Chromosome::allowGeneType(Gene::Triangle);
 	
 	Chromosome::re = &randomEngine;
 	Gene::re = &randomEngine;

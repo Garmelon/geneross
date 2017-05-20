@@ -10,48 +10,32 @@
 class Generation
 {
 public:
-	static size_t size;
-	static size_t living;
-	static Fitness* fitness;
-	static std::minstd_rand* re;
-	
-	Generation();
-	
-	enum CullType
-	{
-		CUTOFF,
-		ROULETTE
-	};
-	
-	void updateFitness();
-	void cull(CullType algorithm=Generation::ROULETTE);
-	void reproduce(float crossover=0.5);  // how often a child is the result of two parents,
-	                                      // and not simply mutation.
-	
 	struct Individual
 	{
-// 		Individual(Chromosome& father, Chromosome& mother) : chromosome(father, mother) {}
-		
 		Chromosome chromosome;
 		unsigned long long fitness = 0;
 		bool fitnessEvaluated = false;
 		bool alive = true;
 	};
 	
+	static size_t size;      // total size of generation
+	static size_t living;    // amount of chromosomes to stay alive between generations
+	static float crossover;  // probability for a new chromosome to have two parents
+	static Fitness* fitness;
+	static std::minstd_rand* re;
+	
+	Generation();
+	
+	// sorts by
+	//  1. alive ones first
+	//  2. ones with fitness first
+	//  3. ones with lowest fitness first
+	void sort();
+	
+	void advance(unsigned int generations=1);
+	void updateFitness();
+	void cull();
+	void reproduce();
+	
 	std::vector<Individual> individuals;
-	
-private:
-	// all of the culling algorithms can assume:
-	//  - sorted array
-	//  - alive flag set to true on all individuals
-	void cullCutoff();
-	void cullRoulette();
-	
-	// pool of Chromosomes
-	// sort pool?
-	// min/max/median
-	// extract stats
-	// calculate fitness
-	// cull/selection
-	// render full generation? No
 };

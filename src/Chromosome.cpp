@@ -59,6 +59,8 @@ Chromosome& Chromosome::operator=(const Chromosome& other)
 {
 	// reserve to other's size/capacity?
 	
+	this->genes.clear();
+	
 	if (this != &other) {
 		for (auto& ptr : other.genes) {
 			this->genes.push_back(std::unique_ptr<Gene>(Gene::copy(ptr.get())));

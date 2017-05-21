@@ -55,7 +55,7 @@ bool Fitness::loadTarget(std::string filename)
 	
 	// load the image
 	sf::Texture tex;
-	if (!tex.loadFromFile("tom-face.png")) {
+	if (!tex.loadFromFile(filename)) {
 		return false;
 	}
 	

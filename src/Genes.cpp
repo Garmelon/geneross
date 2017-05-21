@@ -216,8 +216,12 @@ void GeneTriangle::draw(sf::RenderTarget& target, sf::RenderStates states) const
 void GeneTriangle::randomize()
 {
 	Gene::randomizePosition(this->pos1);
-	Gene::randomizePosition(this->pos2);
-	Gene::randomizePosition(this->pos3);
+// 	Gene::randomizePosition(this->pos2);
+// 	Gene::randomizePosition(this->pos3);
+	this->pos2 = pos1;
+	this->pos3 = pos1;
+	Gene::mutatePosition(this->pos2, GeneTriangle::stddev_position);
+	Gene::mutatePosition(this->pos3, GeneTriangle::stddev_position);
 	Gene::randomizeColor(this->color);
 }
 

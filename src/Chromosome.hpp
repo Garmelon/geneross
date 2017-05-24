@@ -20,9 +20,10 @@ public:
 	Chromosome();  // create empty chromosome
 	Chromosome(const Chromosome& father, const Chromosome& mother);  // crossover
 	
-	Chromosome(const Chromosome& father);  // copy constructor
-// 	Chromosome& operator=(const Chromosome& chr) = delete;  // copy assignment operator
-	Chromosome& operator=(const Chromosome& chr);  // copy assignment operator
+	Chromosome(const Chromosome& other);  // copy constructor
+	Chromosome& operator=(const Chromosome& other);  // copy assignment operator
+	Chromosome(Chromosome&& other);  // copy constructor
+	Chromosome& operator=(Chromosome&& other);  // copy assignment operator
 	
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	

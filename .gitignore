@@ -2,3 +2,5 @@ build/*
 !build/.keep
 
 gross
+*.jpg
+*.png

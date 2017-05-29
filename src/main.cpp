@@ -2,14 +2,14 @@
 #include <iostream>
 #include <random>
 #include <SFML/Graphics.hpp>
+#include "Genes.hpp"
 #include "Chromosome.hpp"
 #include "Fitness.hpp"
 #include "Generation.hpp"
+#include "Control.hpp"
 
 int main()
 {
-	const float winW = 480;
-	const float winH = 480;
 	std::minstd_rand randomEngine;
 	randomEngine.seed(time(nullptr));
 	
@@ -22,19 +22,30 @@ int main()
 	
 	Generation::size = 100;
 	Generation::living = 10;
-	Generation::crossover = 0;
+	Generation::crossover = 0.0;
 	
 	Fitness fitn;
-// 	fitn.loadTarget("tom-face.png");
 	fitn.loadTarget("firefox.png");
+// 	fitn.loadTarget("tom-face.png");
 // 	fitn.loadTarget("goldman_sachs.jpg");
 	fitn.loadShader("compare.glsl");
 	
 	Gene::size = sf::Vector2f(fitn.target.getSize());
 	Generation::fitness = &fitn;
-	
 	Generation gen;
 	
+	Control::fitness = Generation::fitness;
+	Control::generation = &gen;
+	Control con(800, 600, "gross");  // window size
+	
+	sf::Font font;
+	font.loadFromFile("FreeMonoBold.ttf");
+	con.setFont(font);
+	
+	con.interactive();
+}
+
+/*	
 // 	Chromosome a;
 // 	for (int i=0; i<1000; ++i) a.mutate();
 // 	Chromosome b(a);
@@ -81,3 +92,4 @@ int main()
 // 		std::cout << genr.individuals[0].chromosome.length() << ")" << std::endl;
 	}
 }
+*/

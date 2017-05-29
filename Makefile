@@ -9,7 +9,7 @@ SOURCEFILES = cpp
 SRCDIR = src
 TMPDIR = build
 TARGET = gross
-FILES = Genes Chromosome Fitness Generation main
+FILES = Genes Chromosome Fitness Generation Control main
 
 #SOURCES = $(patsubst %,$(SRCDIR)/%.cpp,$(FILES))
 OBJECTS = $(patsubst %,$(TMPDIR)/%.o,$(FILES))

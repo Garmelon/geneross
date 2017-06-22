@@ -16,9 +16,20 @@ void Chromosome::allowGeneType(Gene::GeneType gt, bool allowed)
 }
 
 
+void Chromosome::toggleGeneType(Gene::GeneType gt)
+{
+	Chromosome::allowGeneType(gt, !Chromosome::isGeneTypeAllowed(gt));
+}
+
 bool Chromosome::isGeneTypeAllowed(Gene::GeneType gt)
 {
 	return Chromosome::allowedGeneTypes.find(gt) != Chromosome::allowedGeneTypes.end();
+}
+
+
+bool Chromosome::isAnyGeneTypeAllowed()
+{
+	return !Chromosome::allowedGeneTypes.empty();
 }
 
 

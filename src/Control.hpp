@@ -5,6 +5,7 @@
 #include "Chromosome.hpp"
 #include "Fitness.hpp"
 #include "Generation.hpp"
+#include "Screens.hpp"
 
 
 /*
@@ -33,20 +34,29 @@ public:
 	
 	static float barMargin;
 	
+	sf::RenderWindow window;
+	
+	ScreenSetup screenSetup;
+	
 	Control(float winW, float winH, std::string name);  // creates a window
 	~Control();
 	
 	void interactive();
 	
+	void switchScreen(Screen& newScreen);
+	void close();
+	
 	void setFont(const sf::Font& font);
 	void setLeftText(const std::string& text);
 	void setRightText(const std::string& text);
+	void setText(const std::string& leftText, const std::string& rightText="");
+	
+	void drawBar(sf::RenderTarget& target, sf::RenderStates states) const;
 	
 private:
-	sf::RenderWindow window;
 	
-	sf::Sprite targetSprite;
-	sf::Sprite chromosomeSprite;
+	Screen* currentScreen;
+	Screen* nextScreen;
 	
 	sf::RectangleShape bar;
 	sf::Text leftText;

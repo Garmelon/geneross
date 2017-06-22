@@ -15,7 +15,9 @@ public:
 	static std::minstd_rand* re;
 	
 	static void allowGeneType(Gene::GeneType gt, bool allowed=true);
+	static void toggleGeneType(Gene::GeneType gt);
 	static bool isGeneTypeAllowed(Gene::GeneType gt);
+	static bool isAnyGeneTypeAllowed();
 	
 	Chromosome();  // create empty chromosome
 	Chromosome(const Chromosome& father, const Chromosome& mother);  // crossover

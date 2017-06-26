@@ -61,6 +61,33 @@ private:
 
 class ScreenGenerations : public Screen
 {
+public:
+	ScreenGenerations(Control* controlptr);
+	
+	virtual void enter();
+	virtual void event(sf::Event& event);
+	virtual void update(sf::Time dt);
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	virtual void exit();
+	
+private:
+	bool paused;
+	unsigned int currentGeneration;
+	
+	bool snapshotMode;
+	bool automaticSnapshots;
+	unsigned long long lastBestFitness;
+	unsigned int manualSnapshotCount;
+	unsigned int automaticSnapshotCount;
+	
+	sf::Sprite targetSprite;
+	sf::Sprite chromoSprite;
+	
+	void keyPressed(sf::Event& event);
+	void updateSpriteSize();
+	void updateStatus();
+	
+	void takeSnapshot(bool manual);
 };
 
 

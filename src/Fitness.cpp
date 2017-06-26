@@ -106,6 +106,12 @@ bool Fitness::loadTarget(std::string filename)
 }
 
 
+bool Fitness::saveChromosome(std::string filename)
+{
+	return this->chromosome.getTexture().copyToImage().saveToFile(filename);
+}
+
+
 void Fitness::render(const Chromosome& chr)
 {
 	this->chromosome.clear(Fitness::backgroundColor);

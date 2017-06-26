@@ -35,8 +35,10 @@ public:
 	static float barMargin;
 	
 	sf::RenderWindow window;
+	sf::Vector2f getSizeWithBar();
 	
 	ScreenSetup screenSetup;
+	ScreenGenerations screenGenerations;
 	
 	Control(float winW, float winH, std::string name);  // creates a window
 	~Control();

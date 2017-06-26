@@ -13,6 +13,7 @@ public:
 	Fitness();
 	bool loadShader(std::string filename);
 	bool loadTarget(std::string filename);
+	bool saveChromosome(std::string filename);
 	
 	void render(const Chromosome& chr);
 	unsigned long long compute();

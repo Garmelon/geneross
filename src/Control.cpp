@@ -27,7 +27,8 @@ float Control::barMargin = 4;
 
 
 Control::Control(float winW, float winH, std::string name) :
-	screenSetup(this)
+	screenSetup(this),
+	screenGenerations(this)
 {
 	this->window.create(sf::VideoMode(winW, winH), name);
 	
@@ -51,6 +52,14 @@ Control::Control(float winW, float winH, std::string name) :
 
 Control::~Control()
 {
+}
+
+
+sf::Vector2f Control::getSizeWithBar()
+{
+	sf::Vector2f size = sf::Vector2f(this->window.getSize());
+	size -= sf::Vector2f(0, this->leftText.getCharacterSize() + 2*Control::barMargin);
+	return size;
 }
 
 

@@ -23,7 +23,7 @@ ScreenSetup::ScreenSetup(Control* controlptr) :
 	Screen(controlptr),
 	offset(20, 20),
 	distance(30),
-	items(4)
+	items(5)
 {
 	this->selection = 0;
 	
@@ -131,8 +131,9 @@ void ScreenSetup::executeItem(int position)
 	switch (position) {
 		case 0: Chromosome::toggleGeneType(Gene::Circle); break;
 		case 1: Chromosome::toggleGeneType(Gene::Triangle); break;
-		case 2: break; // spacing placeholder
-		case 3:
+		case 2: Chromosome::toggleGeneType(Gene::Rectangle); break;
+		case 3: break; // spacing placeholder
+		case 4:
 			if (Chromosome::isAnyGeneTypeAllowed()) {
 				this->control->switchScreen(this->control->screenGenerations);
 			} else {
@@ -151,14 +152,20 @@ void ScreenSetup::drawMenu(sf::RenderTarget& target, sf::RenderStates states) co
 	sf::Vector2f position = this->offset;
 	
 	this->drawMenuItem(
-		target, states, position, "Circle genes:  ",
+		target, states, position, "Circle genes:   ",
 		Chromosome::isGeneTypeAllowed(Gene::Circle)?"x":" "
 	);
 	position.y += this->distance;
 	
 	this->drawMenuItem(
-		target, states, position, "Triangle genes:",
+		target, states, position, "Triangle genes: ",
 		Chromosome::isGeneTypeAllowed(Gene::Triangle)?"x":" "
+	);
+	position.y += this->distance;
+	
+	this->drawMenuItem(
+		target, states, position, "Rectangle genes:",
+		Chromosome::isGeneTypeAllowed(Gene::Rectangle)?"x":" "
 	);
 	position.y += 2*this->distance;
 	

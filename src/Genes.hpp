@@ -15,7 +15,8 @@ public:
 	enum GeneType
 	{
 		Circle,
-		Triangle
+		Triangle,
+		Rectangle
 	};
 	
 	static Gene* create(GeneType type);
@@ -85,4 +86,30 @@ private:
 	sf::Vector2f pos2;
 	sf::Vector2f pos3;
 	sf::Color color;
+};
+
+
+
+class GeneRectangle : public Gene
+{
+public:
+	static float stddev_position;
+	static float stddev_color;
+	
+	GeneRectangle();
+	virtual ~GeneRectangle();
+	
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	virtual void randomize();
+	virtual void mutate();
+	
+private:
+	static sf::RectangleShape rectangle;
+	
+	sf::Vector2f topleft;
+	sf::Vector2f botright;
+	
+	sf::Color color;
+	
+	sf::FloatRect rect();
 };

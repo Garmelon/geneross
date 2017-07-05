@@ -30,6 +30,9 @@ Gene* Gene::create(GeneType type)
 		case Gene::Triangle:
 			gene = new GeneTriangle();
 			break;
+		case Gene::Rectangle:
+			gene = new GeneRectangle();
+			break;
 	}
 	
 	gene->randomize();
@@ -44,6 +47,8 @@ Gene* Gene::copy(Gene* gene)
 			return new GeneCircle(*static_cast<GeneCircle*>(gene));
 		case Gene::Triangle:
 			return new GeneTriangle(*static_cast<GeneTriangle*>(gene));
+		case Gene::Rectangle:
+			return new GeneRectangle(*static_cast<GeneRectangle*>(gene));
 	}
 	
 	return nullptr;
@@ -232,16 +237,89 @@ void GeneTriangle::mutate()
 	
 	switch (choicedist(*Gene::re)) {
 		case 0:
-			Gene::mutatePosition(this->pos1, this->stddev_position);
+			Gene::mutatePosition(this->pos1, GeneTriangle::stddev_position);
 			break;
 		case 1:
-			Gene::mutatePosition(this->pos2, this->stddev_position);
+			Gene::mutatePosition(this->pos2, GeneTriangle::stddev_position);
 			break;
 		case 2:
-			Gene::mutatePosition(this->pos3, this->stddev_position);
+			Gene::mutatePosition(this->pos3, GeneTriangle::stddev_position);
 			break;
 		case 3:
-			Gene::mutateColor(this->color, this->stddev_color);
+			Gene::mutateColor(this->color, GeneTriangle::stddev_color);
 			break;
 	}
+}
+
+
+
+// GeneRectangle
+float GeneRectangle::stddev_position = .1;
+float GeneRectangle::stddev_color = 20;
+sf::RectangleShape GeneRectangle::rectangle;
+
+
+GeneRectangle::GeneRectangle()
+{
+	this->type = Gene::Rectangle;
+}
+
+
+GeneRectangle::~GeneRectangle()
+{
+}
+
+
+void GeneRectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	GeneRectangle::rectangle.setPosition(this->topleft);
+	GeneRectangle::rectangle.setSize(this->botright - this->topleft);
+	
+	GeneRectangle::rectangle.setFillColor(this->color);
+	
+	target.draw(GeneRectangle::rectangle, states);
+}
+
+
+void GeneRectangle::randomize()
+{
+	Gene::randomizePosition(this->topleft);
+	Gene::randomizePosition(this->botright);
+	
+	Gene::randomizeColor(this->color);
+}
+
+
+void GeneRectangle::mutate()
+{
+	std::uniform_int_distribution<> choicedist(0, 2);
+	
+	switch (choicedist(*Gene::re)) {
+		case 0:
+			Gene::mutatePosition(this->topleft, GeneRectangle::stddev_position);
+			break;
+		case 1:
+			Gene::mutatePosition(this->botright, GeneRectangle::stddev_position);
+			break;
+		case 2:
+			Gene::mutateColor(this->color, GeneRectangle::stddev_color);
+			break;
+	}
+}
+
+
+sf::FloatRect GeneRectangle::rect()
+{
+	sf::Vector2f tl;
+	sf::Vector2f br;
+	
+	tl.x = std::min(this->topleft.x, this->botright.x);
+	br.x = std::max(this->topleft.x, this->botright.x);
+	
+	tl.y = std::min(this->topleft.y, this->botright.y);
+	br.y = std::max(this->topleft.y, this->botright.y);
+	
+	br -= tl;  // br is now size
+	
+	return sf::FloatRect(tl, br);
 }

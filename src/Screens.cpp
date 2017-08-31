@@ -375,10 +375,11 @@ void ScreenGenerations::takeSnapshot(bool manual)
 		sf::Texture tex;
 		sf::Vector2u size = this->control->window.getSize();
 		tex.create(size.x, size.y);
-		tex.update(this->control->window);
+		tex.update(this->control->window); // TODO: redraw screen before this!?
 		tex.copyToImage().saveToFile(filename);
 	} else {
 		// chromosome only
+		Control::fitness->render(Control::generation->individuals[0].chromosome);
 		Control::fitness->saveChromosome(filename);
 	}
 }

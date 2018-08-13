@@ -31,6 +31,7 @@ Control::Control(float winW, float winH, std::string name) :
 	screenGenerations(this)
 {
 	this->window.create(sf::VideoMode(winW, winH), name);
+	this->window.setVerticalSyncEnabled(false);
 	
 // 	this->targetSprite.setTexture(Control::fitness->target.getTexture());
 // 	this->chromosomeSprite.setTexture(Control::fitness->chromosome.getTexture());
